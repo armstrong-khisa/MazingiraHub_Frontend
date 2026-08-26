@@ -1,19 +1,99 @@
-import { useState } from 'react'
-import { useAuth } from '../context/AuthContext'
+import { Link, NavLink } from 'react-router-dom'
 
-const links = [['Home', '/'], ['Organizations', '/organizations'], ['Stories', '/stories'], ['How It Works', '/how-it-works'], ['About', '/about']]
+function Navbar() {
+	return (
+		<header className="sticky top-0 z-50 border-b border-black/5 bg-[#f7f8f3]/95 backdrop-blur">
+			<div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6 lg:px-10">
+				
+				<Link
+					to="/"
+					className="flex items-center gap-3"
+				>
+					<div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#183b2b] text-xl text-white">
+						↗
+					</div>
 
-export default function Navbar() {
-  const [isOpen, setIsOpen] = useState(false)
-  const { user, logout } = useAuth()
-  const path = window.location.pathname
-  return <header className="site-header"><nav className="nav shell" aria-label="Main navigation">
-    <a className="brand" href="/" aria-label="MazingiraHub home"><span className="leaf-mark">⌁</span> MazingiraHub</a>
-    <button className="menu-button" type="button" aria-expanded={isOpen} aria-label="Toggle menu" onClick={() => setIsOpen(!isOpen)}>☰</button>
-    <div className={`nav-links ${isOpen ? 'open' : ''}`}>
-      {links.map(([label, href]) => <a key={href} className={path === href ? 'active' : ''} href={href} onClick={() => setIsOpen(false)}>{label}</a>)}
-      {user && <><span className="nav-user">Hi, {user.name?.split(' ')[0] || 'there'}</span><button className="link-button" onClick={logout}>Log out</button></>}
-      <a className="nav-login" href="/organizations" onClick={() => setIsOpen(false)}>Donate Now</a>
-    </div>
-  </nav></header>
+					<span className="text-xl font-bold tracking-tight">
+						MazingiraHub
+					</span>
+				</Link>
+
+				<nav className="hidden items-center gap-8 md:flex">
+					<NavLink
+						to="/"
+						className={({ isActive }) =>
+							`relative py-2 text-sm font-medium transition ${
+								isActive
+									? 'text-[#183b2b] after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-full after:bg-[#28a66a]'
+									: 'text-gray-500 hover:text-[#183b2b]'
+							}`
+						}
+					>
+						Home
+					</NavLink>
+
+					<NavLink
+						to="/organizations"
+						className={({ isActive }) =>
+							`relative py-2 text-sm font-medium transition ${
+								isActive
+									? 'text-[#183b2b] after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-full after:bg-[#28a66a]'
+									: 'text-gray-500 hover:text-[#183b2b]'
+							}`
+						}
+					>
+						Organizations
+					</NavLink>
+
+					<NavLink
+						to="/stories"
+						className={({ isActive }) =>
+							`relative py-2 text-sm font-medium transition ${
+								isActive
+									? 'text-[#183b2b] after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-full after:bg-[#28a66a]'
+									: 'text-gray-500 hover:text-[#183b2b]'
+							}`
+						}
+					>
+						Stories
+					</NavLink>
+
+					<NavLink
+						to="/how-it-works"
+						className={({ isActive }) =>
+							`relative py-2 text-sm font-medium transition ${
+								isActive
+									? 'text-[#183b2b] after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-full after:bg-[#28a66a]'
+									: 'text-gray-500 hover:text-[#183b2b]'
+							}`
+						}
+					>
+						How It Works
+					</NavLink>
+
+					<NavLink
+						to="/about"
+						className={({ isActive }) =>
+							`relative py-2 text-sm font-medium transition ${
+								isActive
+									? 'text-[#183b2b] after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-full after:bg-[#28a66a]'
+									: 'text-gray-500 hover:text-[#183b2b]'
+							}`
+						}
+					>
+						About
+					</NavLink>
+				</nav>
+
+				<Link
+					to="/organizations"
+					className="rounded-full bg-[#183b2b] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#24543e]"
+				>
+					Donate Now
+				</Link>
+			</div>
+		</header>
+	)
 }
+
+export default Navbar
