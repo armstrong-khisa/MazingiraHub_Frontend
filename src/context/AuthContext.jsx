@@ -21,6 +21,7 @@ export function getUserRole(user) {
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => {
+    if (!localStorage.getItem(TOKEN_KEY)) return null
     try { return JSON.parse(localStorage.getItem(USER_KEY)) } catch { return null }
   })
   const [isLoading, setIsLoading] = useState(() => Boolean(localStorage.getItem(TOKEN_KEY)))

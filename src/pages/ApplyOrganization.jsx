@@ -1,11 +1,46 @@
 import { useState } from 'react'
-import { applyAsOrganization } from '../services/organizationApi'
 import ErrorMessage from '../components/ErrorMessage'
+import { applyAsOrganization } from '../services/organizationApi'
 
-const initialForm = { name: '', email: '', phone: '', location: '', website: '', focusArea: '', description: '' }
 export default function ApplyOrganization() {
-  const [form, setForm] = useState(initialForm); const [error, setError] = useState(''); const [submitted, setSubmitted] = useState(false); const [submitting, setSubmitting] = useState(false)
-  const update = (event) => setForm({ ...form, [event.target.name]: event.target.value })
-  const submit = async (event) => { event.preventDefault(); setSubmitting(true); setError(''); try { await applyAsOrganization(form); setSubmitted(true) } catch (err) { setError(err.message) } finally { setSubmitting(false) } }
-  return <section className="section shell form-layout"><div><p className="eyebrow">Join MazingiraHub</p><h1>Bring your organisation into the community.</h1><p>Share a few details about your work. Our team will review your application and be in touch.</p><div className="application-note"><strong>Before you apply</strong><p>Have your registration details, description of your work and contact information ready.</p></div></div>{submitted ? <div className="success-card"><span>✓</span><h2>Application received</h2><p>Thank you for sharing your work with us. We’ll review your information and contact you at {form.email}.</p><a className="button" href="/">Return home</a></div> : <form className="form-card" onSubmit={submit}><h2>Organisation application</h2>{error && <ErrorMessage title="We could not submit your application" message={error} onDismiss={() => setError('')} />}<div className="form-row"><label>Organisation name<input required name="name" value={form.name} onChange={update}/></label><label>Email address<input required type="email" name="email" value={form.email} onChange={update}/></label></div><div className="form-row"><label>Phone number<input required name="phone" value={form.phone} onChange={update}/></label><label>County / location<input required name="location" value={form.location} onChange={update}/></label></div><label>Website or social profile <span className="optional">(optional)</span><input type="url" name="website" value={form.website} onChange={update} placeholder="https://"/></label><label>Primary focus area<select required name="focusArea" value={form.focusArea} onChange={update}><option value="">Select an area</option><option>Environment & conservation</option><option>Education</option><option>Health & wellbeing</option><option>Livelihoods</option><option>Community development</option><option>Other</option></select></label><label>Tell us about your work<textarea required name="description" rows="5" value={form.description} onChange={update} placeholder="Your mission, the people you serve and the change you are working toward."/></label>{submitting && <p className="text-sm text-gray-500" role="status">Sending your application securely. Please keep this page open.</p>}<button className="button" disabled={submitting}>{submitting ? 'Submitting application...' : 'Submit application'}</button></form>}</section>
+	const [form, setForm] = useState({ name: '', description: '' })
+	const [submitted, setSubmitted] = useState(false)
+	const [error, setError] = useState('')
+	const [submitting, setSubmitting] = useState(false)
+
+	const update = (event) => setForm({ ...form, [event.target.name]: event.target.value })
+
+	const submit = async (event) => {
+		event.preventDefault()
+		setSubmitting(true)
+		setError('')
+		try {
+			await applyAsOrganization(form)
+			setSubmitted(true)
+		} catch (err) {
+			setError(err.message || 'Unable to submit application.')
+		} finally {
+			setSubmitting(false)
+		}
+	}
+
+	return (
+		<main className="mx-auto max-w-2xl px-6 py-12">
+			<h1 className="text-3xl font-bold text-[#172033]">Organization Application</h1>
+			{submitted ? (
+				<p className="mt-6 rounded-lg bg-green-50 p-4 text-green-700">Application submitted successfully.</p>
+			) : (
+				<form onSubmit={submit} className="mt-8 space-y-5">
+					{error && <ErrorMessage message={error} onDismiss={() => setError('')} />}
+					<label className="block text-sm font-medium text-gray-700">Organization name
+						<input required name="name" value={form.name} onChange={update} className="mt-2 w-full rounded-lg border border-gray-300 px-4 py-2" />
+					</label>
+					<label className="block text-sm font-medium text-gray-700">Description
+						<textarea required name="description" value={form.description} onChange={update} rows={5} className="mt-2 w-full rounded-lg border border-gray-300 px-4 py-2" />
+					</label>
+					<button disabled={submitting} className="rounded-full bg-[#183b2b] px-6 py-2 font-semibold text-white">{submitting ? 'Submitting...' : 'Submit Application'}</button>
+				</form>
+			)}
+		</main>
+	)
 }
