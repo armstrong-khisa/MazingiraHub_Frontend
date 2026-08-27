@@ -5,23 +5,21 @@ import AuthModal from '../modals/Auth'
 function Navbar() {
 	const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
 	const [isProfileOpen, setIsProfileOpen] = useState(false)
-	const [user, setUser] = useState(null)
+	const [user, setUser] = useState(() => {
+		const savedUser = localStorage.getItem('user')
+
+		if (!savedUser) return null
+
+		try {
+			return JSON.parse(savedUser)
+		} catch {
+			localStorage.removeItem('user')
+			return null
+		}
+	})
 
 	const profileRef = useRef(null)
 	const navigate = useNavigate()
-
-	// Load logged-in user
-	useEffect(() => {
-		const savedUser = localStorage.getItem('user')
-
-		if (savedUser) {
-			try {
-				setUser(JSON.parse(savedUser))
-			} catch {
-				localStorage.removeItem('user')
-			}
-		}
-	}, [])
 
 	// Close profile dropdown when clicking outside
 	useEffect(() => {
