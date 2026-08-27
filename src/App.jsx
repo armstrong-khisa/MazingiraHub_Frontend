@@ -13,6 +13,7 @@ import HowItWorks from './pages/HowItWorks'
 import Organizations from './pages/Organizations'
 import OrganizationDetails from './pages/OrganizationDetails'
 import Stories from './pages/Stories'
+import StoryDetails from './pages/StoryDetails'
 import ApplyOrganization from './pages/ApplyOrganization'
 import NotFound from './pages/NotFound'
 
@@ -36,6 +37,7 @@ import AdminDashboard from './pages/admin/Dashboard'
 import AdminApplications from './pages/admin/Applications'
 import AdminOrganisations from './pages/admin/Organisations'
 import AdminDonations from './pages/admin/Donations'
+import AdminProfile from './pages/admin/Profile'
 
 function App() {
   return (
@@ -53,6 +55,7 @@ function App() {
           element={<OrganizationDetails />}
         />
         <Route path="/stories" element={<Stories />} />
+        <Route path="/stories/:id" element={<StoryDetails />} />
         <Route
           path="/apply-organization"
           element={<ApplyOrganization />}
@@ -192,6 +195,15 @@ function App() {
           element={
             <ProtectedRoute requiredRole="admin">
               <AdminDonations />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/admin/profile"
+          element={
+            <ProtectedRoute requiredRole="admin">
+              <AdminProfile />
             </ProtectedRoute>
           }
         />

@@ -61,3 +61,13 @@ export async function getRecentActivity(params = {}) {
   const data = await apiRequest(`/api/admin/activity${search ? `?${search}` : ''}`)
   return data.activity || data.data || data
 }
+
+export async function getAdminProfile() {
+  const data = await apiRequest('/api/admin/profile')
+  return data.profile || data.user || data.data || data
+}
+
+export async function updateAdminProfile(payload) {
+  const data = await apiRequest('/api/admin/profile', { method: 'PUT', body: payload })
+  return data.profile || data.user || data.data || data
+}

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
+import { ArrowLeft, Check, MapPin } from 'lucide-react'
 import Loading from '../components/Loading'
 import ErrorMessage from '../components/ErrorMessage'
 import { getOrganization } from '../services/organizationApi'
@@ -94,7 +95,7 @@ function OrganizationDetails() {
 							</h1>
 
 							<div className="mt-4 flex items-center gap-2 text-sm font-medium text-white/80">
-								<span>●</span>
+								<MapPin className="h-4 w-4" aria-hidden="true" />
 								{organization.location}, Kenya
 							</div>
 						</div>
@@ -142,7 +143,7 @@ function OrganizationDetails() {
 										className="flex items-start gap-4"
 									>
 										<div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#e1f3e8] text-sm font-bold text-[#23945c]">
-											✓
+											<Check className="h-4 w-4" aria-hidden="true" />
 										</div>
 
 										<p className="text-sm leading-7 text-gray-600">
@@ -244,7 +245,7 @@ function OrganizationDetails() {
 							to="/organizations"
 							className="mt-4 flex w-full items-center justify-center rounded-full border border-gray-200 bg-white px-6 py-4 text-sm font-semibold text-gray-600 transition hover:border-[#183b2b] hover:text-[#183b2b]"
 						>
-							← Back to Organizations
+							<ArrowLeft className="mr-1 inline-block h-4 w-4" aria-hidden="true" /> Back to Organizations
 						</Link>
 					</aside>
 				</div>

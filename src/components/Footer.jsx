@@ -1,11 +1,12 @@
 import { Link } from 'react-router-dom'
+import { Leaf } from 'lucide-react'
 
 export default function Footer() {
   return (
     <footer className="site-footer">
       <div className="shell footer-grid">
         <div>
-          <Link className="brand" to="/"><span>✦</span> MazingiraHub</Link>
+          <Link className="brand" to="/"><Leaf size={18} aria-hidden="true" /> MazingiraHub</Link>
           <p>Making it easier to support the organisations creating stronger, greener communities.</p>
         </div>
         <div><h3>Explore</h3><Link to="/organizations">Organizations</Link><Link to="/stories">Impact stories</Link><Link to="/how-it-works">How it works</Link></div>

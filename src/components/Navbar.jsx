@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
+import { ArrowUpRight, House, LogOut } from 'lucide-react'
 import AuthModal from '../modals/Auth'
 import { getUserRole, useAuth } from '../context/AuthContext'
 
 function Navbar() {
 	const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
 	const [isProfileOpen, setIsProfileOpen] = useState(false)
+
 	const { user, isAuthenticated, logout } = useAuth()
 
 	const profileRef = useRef(null)
@@ -29,22 +31,47 @@ function Navbar() {
 		}
 	}, [])
 
-	const handleLoginSuccess = () => {
+	// Close auth modal and send authenticated users to their dashboard
+	const handleLoginSuccess = (authenticatedUser) => {
 		setIsAuthModalOpen(false)
+
+		const role = getUserRole(authenticatedUser)
+		const dashboardPath =
+			role === 'admin'
+				? '/admin/dashboard'
+				: role === 'organization'
+					? '/organization/dashboard'
+					: '/donor/dashboard'
+
+		navigate(dashboardPath, { replace: true })
 	}
 
+	// Logout and return to home page
 	const handleLogout = () => {
 		logout()
 		setIsProfileOpen(false)
-		navigate('/')
+
+		// Send user back to the home page
+		// replace prevents going back to the protected page
+		navigate('/', { replace: true })
 	}
 
+	// Navigate to the correct dashboard based on role
 	const handleDashboard = () => {
 		setIsProfileOpen(false)
+
 		const role = getUserRole(user)
-		navigate(role === 'admin' ? '/admin/dashboard' : role === 'organization' ? '/organization/dashboard' : '/donor/dashboard')
+
+		if (role === 'admin') {
+			navigate('/admin/dashboard')
+		} else if (role === 'organization') {
+			navigate('/organization/dashboard')
+		} else {
+			navigate('/donor/dashboard')
+		}
 	}
 
+	// Handle Donate button
 	const handleDonate = () => {
 		if (!isAuthenticated) {
 			setIsAuthModalOpen(true)
@@ -54,6 +81,7 @@ function Navbar() {
 		navigate('/organizations')
 	}
 
+	// Generate user initials
 	const getInitials = (name) => {
 		if (!name) return 'U'
 
@@ -76,7 +104,7 @@ function Navbar() {
 						className="flex items-center gap-3"
 					>
 						<div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#183b2b] text-xl text-white">
-							↗
+							<ArrowUpRight className="h-5 w-5" aria-hidden="true" />
 						</div>
 
 						<span className="text-xl font-bold tracking-tight">
@@ -106,7 +134,7 @@ function Navbar() {
 								`relative py-2 text-sm font-medium transition ${
 									isActive
 										? 'text-[#183b2b] after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-full after:bg-[#28a66a]'
-										: 'text-gray-500 hover:text-[#183b2b]'
+											: 'text-gray-500 hover:text-[#183b2b]'
 								}`
 							}
 						>
@@ -171,20 +199,21 @@ function Navbar() {
 								ref={profileRef}
 								className="relative"
 							>
+								{/* Profile button */}
 								<button
 									type="button"
 									onClick={() =>
-										setIsProfileOpen(!isProfileOpen)
+										setIsProfileOpen((prev) => !prev)
 									}
 									className="flex items-center gap-2 rounded-full border border-black/10 bg-white px-3 py-2 text-sm font-semibold text-[#183b2b] transition hover:border-[#28a66a]"
 								>
 									{/* Avatar */}
 									<div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#183b2b] text-xs font-bold text-white">
-										{getInitials(user.name)}
+										{getInitials(user?.name)}
 									</div>
 
 									<span className="hidden max-w-[120px] truncate sm:block">
-										{user.name}
+										{user?.name || 'User'}
 									</span>
 
 									<svg
@@ -213,11 +242,11 @@ function Navbar() {
 										{/* User information */}
 										<div className="border-b border-gray-100 px-5 py-4">
 											<p className="text-sm font-semibold text-[#183b2b]">
-												{user.name}
+												{user?.name || 'User'}
 											</p>
 
 											<p className="mt-1 truncate text-xs text-gray-500">
-												{user.email}
+												{user?.email || ''}
 											</p>
 										</div>
 
@@ -227,9 +256,8 @@ function Navbar() {
 											onClick={handleDashboard}
 											className="flex w-full items-center gap-3 px-5 py-3 text-left text-sm text-gray-700 transition hover:bg-[#f7f8f3] hover:text-[#183b2b]"
 										>
-											<span className="text-lg">
-												⌂
-											</span>
+											<House className="h-4 w-4" aria-hidden="true" />
+
 											Dashboard
 										</button>
 
@@ -239,9 +267,8 @@ function Navbar() {
 											onClick={handleLogout}
 											className="flex w-full items-center gap-3 border-t border-gray-100 px-5 py-3 text-left text-sm text-red-600 transition hover:bg-red-50"
 										>
-											<span className="text-lg">
-												↪
-											</span>
+											<LogOut className="h-4 w-4" aria-hidden="true" />
+
 											Logout
 										</button>
 									</div>

@@ -14,5 +14,12 @@ export async function getOrganization(id) {
 }
 
 export function applyAsOrganization(payload) {
-  return apiRequest('/api/organizations/apply', { method: 'POST', body: payload })
+  return apiRequest('/organizations/applications', {
+    method: 'POST',
+    body: {
+      org_name: payload.name,
+      description: payload.description,
+      registration_docs_url: payload.registration_docs_url,
+    },
+  })
 }

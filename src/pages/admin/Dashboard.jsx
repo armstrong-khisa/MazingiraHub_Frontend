@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { Building2, ClipboardList, Gift, Settings, User } from 'lucide-react'
 import Loading from '../../components/Loading'
 import ErrorMessage from '../../components/ErrorMessage'
 import Card from '../../components/Card'
@@ -99,7 +100,7 @@ export default function AdminDashboard() {
             to="/admin/applications"
             className="rounded-lg border border-gray-200 bg-white p-6 transition hover:border-gray-300 hover:shadow-md"
           >
-            <div className="text-3xl mb-3">📋</div>
+            <ClipboardList className="mb-3 h-8 w-8 text-[#23945c]" aria-hidden="true" />
             <h3 className="font-semibold text-[#183b2b]">Applications</h3>
             <p className="mt-1 text-sm text-gray-600">
               Review pending organization applications
@@ -110,7 +111,7 @@ export default function AdminDashboard() {
             to="/admin/organizations"
             className="rounded-lg border border-gray-200 bg-white p-6 transition hover:border-gray-300 hover:shadow-md"
           >
-            <div className="text-3xl mb-3">🏢</div>
+            <Building2 className="mb-3 h-8 w-8 text-[#23945c]" aria-hidden="true" />
             <h3 className="font-semibold text-[#183b2b]">Organizations</h3>
             <p className="mt-1 text-sm text-gray-600">
               Manage all organizations on the platform
@@ -121,15 +122,26 @@ export default function AdminDashboard() {
             to="/admin/donations"
             className="rounded-lg border border-gray-200 bg-white p-6 transition hover:border-gray-300 hover:shadow-md"
           >
-            <div className="text-3xl mb-3">💝</div>
+            <Gift className="mb-3 h-8 w-8 text-[#23945c]" aria-hidden="true" />
             <h3 className="font-semibold text-[#183b2b]">Donations</h3>
             <p className="mt-1 text-sm text-gray-600">
               View all donations and transactions
             </p>
           </Link>
 
+          <Link
+            to="/admin/profile"
+            className="rounded-lg border border-gray-200 bg-white p-6 transition hover:border-gray-300 hover:shadow-md"
+          >
+            <User className="mb-3 h-8 w-8 text-[#23945c]" aria-hidden="true" />
+            <h3 className="font-semibold text-[#183b2b]">My Profile</h3>
+            <p className="mt-1 text-sm text-gray-600">
+              View and edit your administrator account
+            </p>
+          </Link>
+
           <div className="rounded-lg border border-gray-200 bg-white p-6">
-            <div className="text-3xl mb-3">⚙️</div>
+            <Settings className="mb-3 h-8 w-8 text-[#23945c]" aria-hidden="true" />
             <h3 className="font-semibold text-[#183b2b]">Settings</h3>
             <p className="mt-1 text-sm text-gray-600">
               Platform settings and configuration

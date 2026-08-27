@@ -76,7 +76,7 @@ h3 { font-size: 1.65rem; }
 .search span { position: absolute; left: 16px; top: 11px; color: var(--clay); font-size: 1.4rem; }
 .search input { width: 100%; border: 1px solid var(--line); padding: 14px 18px 14px 45px; background: #fff; outline-color: var(--moss); }
 .card-grid, .wire-stories { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
-.organisation-card, .story-card, .form-card { background: #fff; border: 1px solid var(--line); }
+.organisation-card, .story-card, .form-card { background: #fff; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(22,63,50,.06); }
 .card-image { height: 195px; background-position: center; background-size: cover; }
 .card-body { padding: 24px; }
 .card-body h3 { margin-bottom: 10px; color: var(--forest); }
@@ -88,13 +88,16 @@ h3 { font-size: 1.65rem; }
 .organization-progress span { display: block; height: 100%; border-radius: inherit; background: var(--moss); }
 .organization-goal { margin-top: 6px; color: var(--muted); font-size: .75rem; }
 .story-card img { width: 100%; height: 220px; object-fit: cover; }
+.story-card-image { height: 220px; overflow: hidden; }
+.story-card-image-placeholder { display: grid; place-items: center; background: #dcf8e6; color: #168047; }
 .story-date { color: var(--muted); font-size: .78rem; }
 .story-author { color: var(--forest) !important; font-weight: 600; }
 .story-card-footer { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 24px; }
 .story-card-footer a, .story-card-link { color: var(--forest); font-weight: 700; }
-.story-card-featured { display: grid; grid-template-columns: 1fr 1fr; overflow: hidden; background: var(--cream); }
+.story-card-featured { display: grid; grid-template-columns: 1fr 1fr; overflow: hidden; background: #fff; }
 .story-card-featured img { height: 100%; min-height: 400px; }
-.story-card-featured .card-body { display: flex; flex-direction: column; justify-content: center; padding: 48px; }
+.story-card-featured .story-card-image { height: 100%; min-height: 400px; }
+.story-card-featured .card-body { display: flex; flex-direction: column; justify-content: center; padding: 40px; }
 .story-card-featured .card-body h3 { font-size: clamp(2rem, 4vw, 3rem); }
 .story-card-featured .story-card-link { align-self: flex-start; margin-top: 20px; color: #fff; }
 
