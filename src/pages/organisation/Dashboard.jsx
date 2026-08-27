@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { BookOpen, Building2, Gift, Package, Target, Users } from 'lucide-react'
 import Loading from '../../components/Loading'
 import ErrorMessage from '../../components/ErrorMessage'
 import Card from '../../components/Card'
@@ -108,7 +109,7 @@ export default function OrganizationDashboard() {
             to="/organization/profile"
             className="rounded-lg border border-gray-200 bg-white p-6 transition hover:border-gray-300 hover:shadow-md"
           >
-            <div className="text-3xl mb-3">🏢</div>
+            <Building2 className="mb-3 h-8 w-8 text-[#23945c]" aria-hidden="true" />
             <h3 className="font-semibold text-[#183b2b]">My Profile</h3>
             <p className="mt-1 text-sm text-gray-600">
               View and edit organization information
@@ -119,7 +120,7 @@ export default function OrganizationDashboard() {
             to="/organization/donors"
             className="rounded-lg border border-gray-200 bg-white p-6 transition hover:border-gray-300 hover:shadow-md"
           >
-            <div className="text-3xl mb-3">👥</div>
+            <Users className="mb-3 h-8 w-8 text-[#23945c]" aria-hidden="true" />
             <h3 className="font-semibold text-[#183b2b]">Donors</h3>
             <p className="mt-1 text-sm text-gray-600">
               Manage and view your donor community
@@ -130,7 +131,7 @@ export default function OrganizationDashboard() {
             to="/organization/donations"
             className="rounded-lg border border-gray-200 bg-white p-6 transition hover:border-gray-300 hover:shadow-md"
           >
-            <div className="text-3xl mb-3">💝</div>
+            <Gift className="mb-3 h-8 w-8 text-[#23945c]" aria-hidden="true" />
             <h3 className="font-semibold text-[#183b2b]">Donations</h3>
             <p className="mt-1 text-sm text-gray-600">
               Track donation patterns and trends
@@ -141,7 +142,7 @@ export default function OrganizationDashboard() {
             to="/organization/beneficiaries"
             className="rounded-lg border border-gray-200 bg-white p-6 transition hover:border-gray-300 hover:shadow-md"
           >
-            <div className="text-3xl mb-3">🎯</div>
+            <Target className="mb-3 h-8 w-8 text-[#23945c]" aria-hidden="true" />
             <h3 className="font-semibold text-[#183b2b]">Beneficiaries</h3>
             <p className="mt-1 text-sm text-gray-600">
               Manage your beneficiary database
@@ -152,7 +153,7 @@ export default function OrganizationDashboard() {
             to="/organization/inventory"
             className="rounded-lg border border-gray-200 bg-white p-6 transition hover:border-gray-300 hover:shadow-md"
           >
-            <div className="text-3xl mb-3">📦</div>
+            <Package className="mb-3 h-8 w-8 text-[#23945c]" aria-hidden="true" />
             <h3 className="font-semibold text-[#183b2b]">Inventory</h3>
             <p className="mt-1 text-sm text-gray-600">
               Track resources and supplies
@@ -163,7 +164,7 @@ export default function OrganizationDashboard() {
             to="/organization/stories"
             className="rounded-lg border border-gray-200 bg-white p-6 transition hover:border-gray-300 hover:shadow-md"
           >
-            <div className="text-3xl mb-3">📖</div>
+            <BookOpen className="mb-3 h-8 w-8 text-[#23945c]" aria-hidden="true" />
             <h3 className="font-semibold text-[#183b2b]">Stories</h3>
             <p className="mt-1 text-sm text-gray-600">
               Share your impact stories

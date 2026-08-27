@@ -10,7 +10,7 @@ export default function ProtectedRoute({ children, requiredRole }) {
   }
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" replace />
+    return <Navigate to="/" replace />
   }
 
   // If a specific role is required, check if user has that role

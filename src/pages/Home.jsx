@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { Check } from 'lucide-react'
 import OrganizationCard from '../components/OrganizationCard'
 import Loading from '../components/Loading'
 import ErrorMessage from '../components/ErrorMessage'
@@ -88,7 +89,7 @@ function Home() {
 
 					<div className="mt-8 flex items-center gap-3 text-sm text-gray-500">
 						<span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#dff5e8] font-bold text-[#23945c]">
-							✓
+							<Check className="h-4 w-4" aria-hidden="true" />
 						</span>
 
 						<span>
