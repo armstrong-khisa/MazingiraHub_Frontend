@@ -1,85 +1,10 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-
-const organizations = [
-	{
-		id: 1,
-		name: 'Green Earth Kenya',
-		location: 'Nairobi',
-		category: 'Forest Conservation',
-		description:
-			'Protecting forests and restoring degraded ecosystems through community-led tree planting, seedling care, and environmental education.',
-		image:
-			'https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=1200&q=85',
-		raised: 850000,
-		goal: 1500000,
-	},
-
-	{
-		id: 2,
-		name: 'Blue Planet Coast',
-		location: 'Mombasa',
-		category: 'Ocean & Coast',
-		description:
-			'Working with coastal communities to protect shorelines, reduce plastic pollution, and restore marine ecosystems.',
-		image:
-			'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=85',
-		raised: 420000,
-		goal: 800000,
-	},
-
-	{
-		id: 3,
-		name: 'Wildlife Guardians',
-		location: 'Tsavo',
-		category: 'Wildlife Conservation',
-		description:
-			'Safeguarding wildlife habitats and supporting communities living alongside elephants and other vital species.',
-		image:
-			'https://images.unsplash.com/photo-1557050543-4d5f4e07ef46?auto=format&fit=crop&w=1200&q=85',
-		raised: 1250000,
-		goal: 2000000,
-	},
-
-	{
-		id: 4,
-		name: 'Green Communities Initiative',
-		location: 'Kisumu',
-		category: 'Community',
-		description:
-			'Helping communities build greener neighborhoods through waste management, tree planting, and environmental education.',
-		image:
-			'https://images.unsplash.com/photo-1497250681960-ef046c08a56e?auto=format&fit=crop&w=1200&q=85',
-		raised: 310000,
-		goal: 600000,
-	},
-
-	{
-		id: 5,
-		name: 'Savannah Conservation Trust',
-		location: 'Nakuru',
-		category: 'Wildlife Conservation',
-		description:
-			'Protecting important habitats while supporting sustainable livelihoods for communities surrounding conservation areas.',
-		image:
-			'https://images.unsplash.com/photo-1516426122078-c23e76319801?auto=format&fit=crop&w=1200&q=85',
-		raised: 690000,
-		goal: 1200000,
-	},
-
-	{
-		id: 6,
-		name: 'Clean Rivers Kenya',
-		location: 'Nairobi',
-		category: 'Clean Water',
-		description:
-			'Restoring rivers and waterways by reducing pollution and working with local communities on long-term conservation.',
-		image:
-			'https://images.unsplash.com/photo-1437482078695-73f5ca6c96e2?auto=format&fit=crop&w=1200&q=85',
-		raised: 275000,
-		goal: 500000,
-	},
-]
+import OrganizationCard from '../components/OrganizationCard'
+import Loading from '../components/Loading'
+import ErrorMessage from '../components/ErrorMessage'
+import { getOrganizations } from '../services/organizationApi'
+import DonationModal from '../modals/Donation'
 
 const categories = [
 	'All Organizations',
@@ -93,6 +18,30 @@ const categories = [
 function Organizations() {
 	const [selectedCategory, setSelectedCategory] =
 		useState('All Organizations')
+	const [organizations, setOrganizations] = useState([])
+	const [loading, setLoading] = useState(true)
+	const [error, setError] = useState('')
+	const [selectedOrganization, setSelectedOrganization] = useState(null)
+
+	useEffect(() => {
+		let active = true
+
+		async function fetchOrganizations() {
+			try {
+				const data = await getOrganizations()
+				if (active) setOrganizations(Array.isArray(data) ? data : [])
+			} catch (err) {
+				if (active) setError(err.message)
+			} finally {
+				if (active) setLoading(false)
+			}
+		}
+
+		void fetchOrganizations()
+		return () => {
+			active = false
+		}
+	}, [])
 
 	const filteredOrganizations =
 		selectedCategory === 'All Organizations'
@@ -102,12 +51,15 @@ function Organizations() {
 						organization.category === selectedCategory
 				)
 
-	const formatMoney = (amount) => {
-		return `KES ${amount.toLocaleString()}`
-	}
+	if (loading) return <Loading />
 
 	return (
 		<>
+			{error && (
+				<div className="shell" role="alert">
+					<ErrorMessage message={error} onDismiss={() => setError('')} />
+				</div>
+			)}
 			{/* HERO */}
 			<section className="bg-[#183b2b]">
 				<div className="mx-auto max-w-7xl px-6 py-20 lg:px-10 lg:py-28">
@@ -185,103 +137,16 @@ function Organizations() {
 						</div>
 					) : (
 						<div className="grid gap-7 md:grid-cols-2 lg:grid-cols-3">
-							{filteredOrganizations.map((organization) => {
-								const percentage = Math.min(
-									Math.round(
-										(organization.raised /
-											organization.goal) *
-											100
-									),
-									100
-								)
-
-								return (
-									<article
-										key={organization.id}
-										className="group overflow-hidden rounded-3xl bg-white shadow-sm ring-1 ring-black/5 transition duration-300 hover:-translate-y-1 hover:shadow-xl"
-									>
-										{/* IMAGE */}
-										<div className="relative overflow-hidden">
-											<img
-												src={organization.image}
-												alt={organization.name}
-												className="h-64 w-full object-cover transition duration-500 group-hover:scale-105"
-											/>
-
-											<div className="absolute left-4 top-4 rounded-full bg-white/95 px-3 py-1.5 text-xs font-bold text-[#183b2b] shadow-sm">
-												{organization.category}
-											</div>
-										</div>
-
-										{/* CONTENT */}
-										<div className="p-6">
-											<div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#23945c]">
-												<span>●</span>
-												{organization.location}
-											</div>
-
-											<h3 className="mt-3 text-2xl font-bold text-[#172033]">
-												{organization.name}
-											</h3>
-
-											<p className="mt-3 min-h-[72px] text-sm leading-6 text-gray-500">
-												{organization.description}
-											</p>
-
-											{/* PROGRESS */}
-											<div className="mt-6">
-												<div className="mb-2 flex items-center justify-between text-xs">
-													<span className="font-semibold text-gray-700">
-														{formatMoney(
-															organization.raised
-														)}{' '}
-														raised
-													</span>
-
-													<span className="text-gray-400">
-														{percentage}%
-													</span>
-												</div>
-
-												<div className="h-2 overflow-hidden rounded-full bg-gray-100">
-													<div
-														className="h-full rounded-full bg-[#28a66a] transition-all duration-500"
-														style={{
-															width: `${percentage}%`,
-														}}
-													/>
-												</div>
-
-												<p className="mt-2 text-xs text-gray-400">
-													Goal:{' '}
-													{formatMoney(
-														organization.goal
-													)}
-												</p>
-											</div>
-
-											{/* ACTIONS */}
-											<div className="mt-6 flex gap-3">
-												<Link
-													to={`/organizations/${organization.id}`}
-													className="flex-1 rounded-full border border-[#183b2b] px-4 py-3 text-center text-sm font-semibold text-[#183b2b] transition hover:bg-[#183b2b] hover:text-white"
-												>
-													View Details
-												</Link>
-
-												<Link
-													to={`/organizations/${organization.id}/donate`}
-													className="rounded-full bg-[#183b2b] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#24543e]"
-												>
-													Donate
-												</Link>
-											</div>
-										</div>
-									</article>
-								)
-							})}
+							{filteredOrganizations.map((organization) => (
+								<OrganizationCard
+									key={organization._id || organization.id}
+									organisation={organization}
+									onDonate={setSelectedOrganization}
+								/>
+							))}
 						</div>
 					)}
+					{selectedOrganization && <DonationModal organization={selectedOrganization} onClose={() => setSelectedOrganization(null)} />}
 				</div>
 			</section>
 

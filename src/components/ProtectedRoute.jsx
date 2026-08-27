@@ -1,5 +1,5 @@
 import { Navigate } from 'react-router-dom'
-import { useAuth } from '../context/AuthContext'
+import { getUserRole, useAuth } from '../context/AuthContext'
 import Loading from './Loading'
 
 export default function ProtectedRoute({ children, requiredRole }) {
@@ -15,9 +15,8 @@ export default function ProtectedRoute({ children, requiredRole }) {
 
   // If a specific role is required, check if user has that role
   if (requiredRole) {
-    const userRole = user?.role || user?.userType || ''
-    const normalizedUserRole = userRole.toLowerCase()
-    const normalizedRequiredRole = requiredRole.toLowerCase()
+    const normalizedUserRole = getUserRole(user)
+    const normalizedRequiredRole = requiredRole.toLowerCase().replace('organisation', 'organization')
 
     if (normalizedUserRole !== normalizedRequiredRole) {
       return <Navigate to="/" replace />

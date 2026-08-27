@@ -1,143 +1,40 @@
+import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-
-const organizations = [
-	{
-		id: 1,
-		name: 'Green Earth Kenya',
-		location: 'Nairobi',
-		category: 'Forest Conservation',
-		description:
-			'Protecting forests and restoring degraded ecosystems through community-led tree planting, seedling care, and environmental education.',
-		image:
-			'https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=1400&q=85',
-		raised: 850000,
-		goal: 1500000,
-		about:
-			'Green Earth Kenya works with local communities to restore forests, protect biodiversity, and create a healthier environment for future generations.',
-		impact: [
-			'Planting and caring for native trees',
-			'Restoring degraded forest areas',
-			'Supporting local environmental education',
-			'Working with communities on conservation',
-		],
-	},
-
-	{
-		id: 2,
-		name: 'Blue Planet Coast',
-		location: 'Mombasa',
-		category: 'Ocean & Coast',
-		description:
-			'Working with coastal communities to protect shorelines, reduce plastic pollution, and restore marine ecosystems.',
-		image:
-			'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1400&q=85',
-		raised: 420000,
-		goal: 800000,
-		about:
-			'Blue Planet Coast works with coastal communities to protect marine ecosystems and build cleaner, healthier coastlines.',
-		impact: [
-			'Reducing plastic pollution',
-			'Restoring coastal ecosystems',
-			'Organizing community clean-ups',
-			'Supporting marine conservation education',
-		],
-	},
-
-	{
-		id: 3,
-		name: 'Wildlife Guardians',
-		location: 'Tsavo',
-		category: 'Wildlife Conservation',
-		description:
-			'Safeguarding wildlife habitats and supporting communities living alongside elephants and other vital species.',
-		image:
-			'https://images.unsplash.com/photo-1557050543-4d5f4e07ef46?auto=format&fit=crop&w=1400&q=85',
-		raised: 1250000,
-		goal: 2000000,
-		about:
-			'Wildlife Guardians works to protect wildlife habitats while helping communities and wildlife coexist sustainably.',
-		impact: [
-			'Protecting wildlife habitats',
-			'Supporting conservation communities',
-			'Promoting human-wildlife coexistence',
-			'Supporting wildlife education',
-		],
-	},
-
-	{
-		id: 4,
-		name: 'Green Communities Initiative',
-		location: 'Kisumu',
-		category: 'Community',
-		description:
-			'Helping communities build greener neighborhoods through waste management, tree planting, and environmental education.',
-		image:
-			'https://images.unsplash.com/photo-1497250681960-ef046c08a56e?auto=format&fit=crop&w=1400&q=85',
-		raised: 310000,
-		goal: 600000,
-		about:
-			'Green Communities Initiative helps communities create cleaner and greener neighborhoods through practical local projects.',
-		impact: [
-			'Community tree planting',
-			'Waste management programs',
-			'Environmental education',
-			'Greener neighborhood projects',
-		],
-	},
-
-	{
-		id: 5,
-		name: 'Savannah Conservation Trust',
-		location: 'Nakuru',
-		category: 'Wildlife Conservation',
-		description:
-			'Protecting important habitats while supporting sustainable livelihoods for communities surrounding conservation areas.',
-		image:
-			'https://images.unsplash.com/photo-1516426122078-c23e76319801?auto=format&fit=crop&w=1400&q=85',
-		raised: 690000,
-		goal: 1200000,
-		about:
-			'Savannah Conservation Trust protects important habitats while supporting sustainable livelihoods for surrounding communities.',
-		impact: [
-			'Habitat protection',
-			'Wildlife conservation',
-			'Community livelihood programs',
-			'Environmental education',
-		],
-	},
-
-	{
-		id: 6,
-		name: 'Clean Rivers Kenya',
-		location: 'Nairobi',
-		category: 'Clean Water',
-		description:
-			'Restoring rivers and waterways by reducing pollution and working with local communities on long-term conservation.',
-		image:
-			'https://images.unsplash.com/photo-1437482078695-73f5ca6c96e2?auto=format&fit=crop&w=1400&q=85',
-		raised: 275000,
-		goal: 500000,
-		about:
-			'Clean Rivers Kenya works with communities to restore waterways and protect important sources of clean water.',
-		impact: [
-			'River restoration',
-			'Pollution reduction',
-			'Community clean-ups',
-			'Clean water education',
-		],
-	},
-]
+import Loading from '../components/Loading'
+import ErrorMessage from '../components/ErrorMessage'
+import { getOrganization } from '../services/organizationApi'
+import DonationModal from '../modals/Donation'
 
 function OrganizationDetails() {
 	const { id } = useParams()
+	const [organization, setOrganization] = useState(null)
+	const [loading, setLoading] = useState(true)
+	const [error, setError] = useState('')
+	const [donationOpen, setDonationOpen] = useState(false)
 
-	const organization = organizations.find(
-		(item) => item.id === Number(id)
-	)
+	useEffect(() => {
+		let active = true
+		getOrganization(id)
+			.then((data) => {
+				if (active) setOrganization(data)
+			})
+			.catch((err) => {
+				if (active) setError(err.message)
+			})
+			.finally(() => {
+				if (active) setLoading(false)
+			})
+		return () => {
+			active = false
+		}
+	}, [id])
 
 	const formatMoney = (amount) => {
-		return `KES ${amount.toLocaleString()}`
+		return `KES ${Number(amount || 0).toLocaleString()}`
 	}
+
+	if (loading) return <Loading />
+	if (error) return <ErrorMessage message={error} />
 
 	// If organization doesn't exist
 	if (!organization) {
@@ -163,15 +60,13 @@ function OrganizationDetails() {
 		)
 	}
 
-	const percentage = Math.min(
-		Math.round((organization.raised / organization.goal) * 100),
-		100
-	)
-
-	const remaining = Math.max(
-		organization.goal - organization.raised,
-		0
-	)
+	const raised = Number(organization.amountRaised || organization.raised || 0)
+	const goal = Number(organization.goal || organization.targetAmount || 0)
+	const percentage = goal ? Math.min(Math.round((raised / goal) * 100), 100) : 0
+	const remaining = Math.max(goal - raised, 0)
+	const image = organization.logo || organization.image || organization.imageUrl
+	const impact = Array.isArray(organization.impact) ? organization.impact : []
+	const about = organization.about || organization.description || ''
 
 	return (
 		<>
@@ -179,7 +74,7 @@ function OrganizationDetails() {
 			<section className="relative">
 				<div className="h-[420px] overflow-hidden lg:h-[520px]">
 					<img
-						src={organization.image}
+						src={image}
 						alt={organization.name}
 						className="h-full w-full object-cover"
 					/>
@@ -222,7 +117,7 @@ function OrganizationDetails() {
 							</h2>
 
 							<p className="mt-6 text-base leading-8 text-gray-500">
-								{organization.about}
+								{about}
 							</p>
 
 							<p className="mt-5 text-base leading-8 text-gray-500">
@@ -241,7 +136,7 @@ function OrganizationDetails() {
 							</h2>
 
 							<div className="mt-7 space-y-4">
-								{organization.impact.map((item) => (
+								{impact.map((item) => (
 									<div
 										key={item}
 										className="flex items-start gap-4"
@@ -287,7 +182,7 @@ function OrganizationDetails() {
 								<div>
 									<p className="text-3xl font-bold text-[#172033]">
 										{formatMoney(
-											organization.raised
+											raised
 										)}
 									</p>
 
@@ -313,7 +208,7 @@ function OrganizationDetails() {
 
 							<div className="mt-3 flex justify-between text-xs text-gray-400">
 								<span>
-									Goal: {formatMoney(organization.goal)}
+									Goal: {formatMoney(goal)}
 								</span>
 
 								<span>
@@ -332,12 +227,13 @@ function OrganizationDetails() {
 								being done by this organization.
 							</p>
 
-							<Link
-								to={`/organizations/${organization.id}/donate`}
+							<button
+								type="button"
+								onClick={() => setDonationOpen(true)}
 								className="mt-6 flex w-full items-center justify-center rounded-full bg-[#183b2b] px-6 py-4 text-sm font-bold text-white transition hover:bg-[#24543e]"
 							>
 								Donate Now
-							</Link>
+							</button>
 
 							<p className="mt-4 text-center text-xs text-gray-400">
 								Every contribution makes a difference.
@@ -370,14 +266,16 @@ function OrganizationDetails() {
 						change for communities and ecosystems.
 					</p>
 
-					<Link
-						to={`/organizations/${organization.id}/donate`}
+					<button
+						type="button"
+						onClick={() => setDonationOpen(true)}
 						className="mt-8 inline-flex rounded-full bg-white px-8 py-4 text-sm font-bold text-[#183b2b] transition hover:bg-[#e8f5ed]"
 					>
 						Donate to {organization.name}
-					</Link>
+					</button>
 				</div>
 			</section>
+			{donationOpen && <DonationModal organization={organization} onClose={() => setDonationOpen(false)} />}
 		</>
 	)
 }

@@ -1,4 +1,4 @@
-export default function Card({ children, className = '', hover = false }) {
+export default function Card({ children, footer, className = '', hover = false }) {
   return (
     <div
       className={`rounded-lg border border-gray-200 bg-white p-6 ${
@@ -6,6 +6,7 @@ export default function Card({ children, className = '', hover = false }) {
       } ${className}`}
     >
       {children}
+      {footer && <div className="mt-6 border-t border-gray-100 pt-4">{footer}</div>}
     </div>
   )
 }
