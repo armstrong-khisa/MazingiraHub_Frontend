@@ -1,4 +1,9 @@
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import OrganizationCard from '../components/OrganizationCard'
+import Loading from '../components/Loading'
+import ErrorMessage from '../components/ErrorMessage'
+import { getOrganizations } from '../services/organizationApi'
 
 const stats = [
 	{
@@ -19,34 +24,28 @@ const stats = [
 	},
 ]
 
-const organizations = [
-	{
-		name: 'Green Earth Kenya',
-		location: 'Nairobi',
-		description:
-			'Protecting forests and restoring degraded ecosystems through community-led conservation.',
-		image:
-			'https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=900&q=80',
-	},
-	{
-		name: 'Blue Planet Coast',
-		location: 'Mombasa',
-		description:
-			'Protecting coastal communities and marine ecosystems for future generations.',
-		image:
-			'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=900&q=80',
-	},
-	{
-		name: 'Wildlife Guardians',
-		location: 'Tsavo',
-		description:
-			'Safeguarding wildlife habitats and supporting communities living alongside nature.',
-		image:
-			'https://images.unsplash.com/photo-1557050543-4d5f4e07ef46?auto=format&fit=crop&w=900&q=80',
-	},
-]
-
 function Home() {
+	const [organizations, setOrganizations] = useState([])
+	const [loadingOrganizations, setLoadingOrganizations] = useState(true)
+	const [organizationError, setOrganizationError] = useState('')
+
+	useEffect(() => {
+		let active = true
+		getOrganizations()
+			.then((data) => {
+				if (active) setOrganizations(Array.isArray(data) ? data.slice(0, 3) : [])
+			})
+			.catch((err) => {
+				if (active) setOrganizationError(err.message)
+			})
+			.finally(() => {
+				if (active) setLoadingOrganizations(false)
+			})
+		return () => {
+			active = false
+		}
+	}, [])
+
 	return (
 		<>
 			{/* HERO */}
@@ -172,46 +171,14 @@ function Home() {
 				</div>
 
 				{/* ORGANIZATION CARDS */}
-				<div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-					{organizations.map((organization) => (
-						<article
-							key={organization.name}
-							className="group overflow-hidden rounded-3xl bg-white shadow-sm ring-1 ring-black/5 transition hover:-translate-y-1 hover:shadow-xl"
-						>
-							<div className="overflow-hidden">
-								<img
-									src={organization.image}
-									alt={organization.name}
-									className="h-64 w-full object-cover transition duration-500 group-hover:scale-105"
-								/>
-							</div>
-
-							<div className="p-6">
-								<p className="text-xs font-bold uppercase tracking-widest text-[#23945c]">
-									{organization.location}
-								</p>
-
-								<h3 className="mt-3 text-2xl font-bold text-[#172033]">
-									{organization.name}
-								</h3>
-
-								<p className="mt-3 text-sm leading-6 text-gray-500">
-									{organization.description}
-								</p>
-
-								<Link
-									to="/organizations"
-									className="mt-6 inline-flex items-center text-sm font-bold text-[#183b2b]"
-								>
-									Learn more
-									<span className="ml-2 transition group-hover:translate-x-1">
-										→
-									</span>
-								</Link>
-							</div>
-						</article>
-					))}
-				</div>
+				{organizationError && <ErrorMessage message={organizationError} onDismiss={() => setOrganizationError('')} />}
+				{loadingOrganizations ? <Loading /> : (
+					<div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+						{organizations.map((organization) => (
+							<OrganizationCard key={organization._id || organization.id} organisation={organization} />
+						))}
+					</div>
+				)}
 			</section>
 
 			{/* CTA */}

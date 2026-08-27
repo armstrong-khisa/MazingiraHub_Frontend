@@ -1,78 +1,9 @@
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-
-const stories = [
-	{
-		id: 1,
-		category: 'Forest Restoration',
-		date: 'August 2026',
-		readTime: '5 min read',
-		title: 'Restoring the Mau Forest, one community at a time',
-		description:
-			'Local communities are helping restore degraded forest areas while creating sustainable opportunities for the people who depend on them.',
-		image:
-			'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=1400&q=85',
-	},
-
-	{
-		id: 2,
-		category: 'Wildlife',
-		date: 'July 2026',
-		readTime: '4 min read',
-		title: 'Protecting wildlife through community action',
-		description:
-			'Conservation becomes stronger when communities living alongside wildlife are part of the solution.',
-		image:
-			'https://images.unsplash.com/photo-1516426122078-c23e76319801?auto=format&fit=crop&w=1400&q=85',
-	},
-
-	{
-		id: 3,
-		category: 'Ocean & Coast',
-		date: 'June 2026',
-		readTime: '6 min read',
-		title: 'Cleaner coastlines start with local action',
-		description:
-			'Coastal communities are finding new ways to reduce plastic pollution and protect the ecosystems around them.',
-		image:
-			'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1400&q=85',
-	},
-
-	{
-		id: 4,
-		category: 'Sustainable Living',
-		date: 'May 2026',
-		readTime: '5 min read',
-		title: 'Growing food while caring for the soil',
-		description:
-			'Regenerative farming practices are helping farmers improve soil health, protect water, and build more resilient livelihoods.',
-		image:
-			'https://images.unsplash.com/photo-1464226184884-fa280b87c399?auto=format&fit=crop&w=1400&q=85',
-	},
-
-	{
-		id: 5,
-		category: 'Clean Water',
-		date: 'April 2026',
-		readTime: '4 min read',
-		title: 'Bringing cleaner water back to local communities',
-		description:
-			'Community-led river restoration is helping protect important water sources for people and wildlife.',
-		image:
-			'https://images.unsplash.com/photo-1437482078695-73f5ca6c96e2?auto=format&fit=crop&w=1400&q=85',
-	},
-
-	{
-		id: 6,
-		category: 'Community',
-		date: 'March 2026',
-		readTime: '5 min read',
-		title: 'When a neighborhood comes together for nature',
-		description:
-			'Small environmental projects can become powerful when neighbors work together around a shared vision.',
-		image:
-			'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1400&q=85',
-	},
-]
+import StoryCard from '../components/StoryCard'
+import Loading from '../components/Loading'
+import ErrorMessage from '../components/ErrorMessage'
+import { getStories } from '../services/storyApi'
 
 const categories = [
 	'All Stories',
@@ -85,8 +16,45 @@ const categories = [
 ]
 
 function Stories() {
+	const [stories, setStories] = useState([])
+	const [category, setCategory] = useState('All Stories')
+	const [loading, setLoading] = useState(true)
+	const [error, setError] = useState('')
+
+	useEffect(() => {
+		let active = true
+
+		async function fetchStories() {
+			try {
+				const data = await getStories()
+				if (active) setStories(Array.isArray(data) ? data : [])
+			} catch (err) {
+				if (active) setError(err.message)
+			} finally {
+				if (active) setLoading(false)
+			}
+		}
+
+		void fetchStories()
+		return () => {
+			active = false
+		}
+	}, [])
+
+	const visibleStories = category === 'All Stories'
+		? stories
+		: stories.filter((story) => (story.category || story.focusArea) === category)
+	const featuredStory = visibleStories[0]
+
+	if (loading) return <Loading />
+
 	return (
 		<>
+			{error && (
+				<div className="shell" role="alert">
+					<ErrorMessage message={error} onDismiss={() => setError('')} />
+				</div>
+			)}
 			{/* HERO */}
 			<section className="bg-[#183b2b]">
 				<div className="mx-auto max-w-7xl px-6 py-20 lg:px-10 lg:py-28">
@@ -111,51 +79,11 @@ function Stories() {
 			</section>
 
 			{/* FEATURED STORY */}
-			<section className="bg-white">
+			{featuredStory && <section className="bg-white">
 				<div className="mx-auto max-w-7xl px-6 py-16 lg:px-10 lg:py-24">
-					<div className="grid overflow-hidden rounded-[2rem] bg-[#f7f8f3] lg:grid-cols-2">
-						<div className="min-h-[400px] overflow-hidden lg:min-h-[550px]">
-							<img
-								src={stories[0].image}
-								alt={stories[0].title}
-								className="h-full w-full object-cover transition duration-700 hover:scale-105"
-							/>
-						</div>
-
-						<div className="flex flex-col justify-center p-8 sm:p-12 lg:p-16">
-							<div className="flex flex-wrap items-center gap-3 text-xs font-bold uppercase tracking-wider">
-								<span className="text-[#23945c]">
-									{stories[0].category}
-								</span>
-
-								<span className="text-gray-300">•</span>
-
-								<span className="text-gray-400">
-									{stories[0].date}
-								</span>
-							</div>
-
-							<h2 className="mt-5 text-4xl font-bold leading-tight tracking-tight text-[#172033] sm:text-5xl">
-								{stories[0].title}
-							</h2>
-
-							<p className="mt-6 text-base leading-8 text-gray-500">
-								{stories[0].description}
-							</p>
-
-							<div className="mt-8">
-								<Link
-									to={`/stories/${stories[0].id}`}
-									className="inline-flex items-center rounded-full bg-[#183b2b] px-7 py-4 text-sm font-bold text-white transition hover:bg-[#24543e]"
-								>
-									Read Story
-									<span className="ml-2">→</span>
-								</Link>
-							</div>
-						</div>
-					</div>
+					<StoryCard story={featuredStory} featured />
 				</div>
-			</section>
+			</section>}
 
 			{/* FILTER */}
 			<section className="border-y border-gray-200 bg-[#f7f8f3]">
@@ -164,8 +92,9 @@ function Stories() {
 						{categories.map((category, index) => (
 							<button
 								key={category}
+								onClick={() => setCategory(category)}
 								className={`rounded-full px-5 py-2.5 text-sm font-semibold transition ${
-									index === 0
+									category === categories[index]
 										? 'bg-[#183b2b] text-white'
 										: 'border border-gray-200 bg-white text-gray-600 hover:border-[#183b2b] hover:text-[#183b2b]'
 								}`}
@@ -191,56 +120,8 @@ function Stories() {
 					</div>
 
 					<div className="grid gap-7 md:grid-cols-2 lg:grid-cols-3">
-						{stories.slice(1).map((story) => (
-							<article
-								key={story.id}
-								className="group overflow-hidden rounded-3xl bg-white shadow-sm ring-1 ring-black/5 transition duration-300 hover:-translate-y-1 hover:shadow-xl"
-							>
-								<div className="overflow-hidden">
-									<img
-										src={story.image}
-										alt={story.title}
-										className="h-64 w-full object-cover transition duration-500 group-hover:scale-105"
-									/>
-								</div>
-
-								<div className="p-6">
-									<div className="flex flex-wrap items-center gap-2 text-xs font-bold uppercase tracking-wider">
-										<span className="text-[#23945c]">
-											{story.category}
-										</span>
-
-										<span className="text-gray-300">
-											•
-										</span>
-
-										<span className="text-gray-400">
-											{story.date}
-										</span>
-									</div>
-
-									<h3 className="mt-4 text-2xl font-bold leading-tight text-[#172033]">
-										{story.title}
-									</h3>
-
-									<p className="mt-3 text-sm leading-6 text-gray-500">
-										{story.description}
-									</p>
-
-									<div className="mt-6 flex items-center justify-between">
-										<span className="text-xs text-gray-400">
-											{story.readTime}
-										</span>
-
-										<Link
-											to={`/stories/${story.id}`}
-											className="text-sm font-bold text-[#183b2b]"
-										>
-											Read story →
-										</Link>
-									</div>
-								</div>
-							</article>
+						{visibleStories.slice(1).map((story) => (
+							<StoryCard key={story._id || story.id} story={story} />
 						))}
 					</div>
 				</div>

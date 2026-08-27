@@ -1,22 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
 import AuthModal from '../modals/Auth'
+import { getUserRole, useAuth } from '../context/AuthContext'
 
 function Navbar() {
 	const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
 	const [isProfileOpen, setIsProfileOpen] = useState(false)
-	const [user, setUser] = useState(() => {
-		const savedUser = localStorage.getItem('user')
-
-		if (!savedUser) return null
-
-		try {
-			return JSON.parse(savedUser)
-		} catch {
-			localStorage.removeItem('user')
-			return null
-		}
-	})
+	const { user, isAuthenticated, logout } = useAuth()
 
 	const profileRef = useRef(null)
 	const navigate = useNavigate()
@@ -39,25 +29,24 @@ function Navbar() {
 		}
 	}, [])
 
-	const handleLoginSuccess = (loggedInUser) => {
-		setUser(loggedInUser)
+	const handleLoginSuccess = () => {
 		setIsAuthModalOpen(false)
 	}
 
 	const handleLogout = () => {
-		localStorage.removeItem('user')
-		setUser(null)
+		logout()
 		setIsProfileOpen(false)
 		navigate('/')
 	}
 
 	const handleDashboard = () => {
 		setIsProfileOpen(false)
-		navigate('/dashboard')
+		const role = getUserRole(user)
+		navigate(role === 'admin' ? '/admin/dashboard' : role === 'organization' ? '/organization/dashboard' : '/donor/dashboard')
 	}
 
 	const handleDonate = () => {
-		if (!user) {
+		if (!isAuthenticated) {
 			setIsAuthModalOpen(true)
 			return
 		}
@@ -169,7 +158,7 @@ function Navbar() {
 					<div className="flex items-center gap-3">
 
 						{/* Sign In / Profile */}
-						{!user ? (
+						{!isAuthenticated ? (
 							<button
 								type="button"
 								onClick={() => setIsAuthModalOpen(true)}

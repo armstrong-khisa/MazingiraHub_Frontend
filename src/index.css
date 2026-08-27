@@ -84,9 +84,19 @@ h3 { font-size: 1.65rem; }
 .location-pill { color: var(--clay); font-size: .68rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
 .raised { display: block; margin: 20px 0; color: var(--forest); font-size: .88rem; }
 .card-button { width: 100%; }
+.organization-progress { height: 8px; overflow: hidden; border-radius: 999px; background: #eef1ec; }
+.organization-progress span { display: block; height: 100%; border-radius: inherit; background: var(--moss); }
+.organization-goal { margin-top: 6px; color: var(--muted); font-size: .75rem; }
 .story-card img { width: 100%; height: 220px; object-fit: cover; }
 .story-date { color: var(--muted); font-size: .78rem; }
 .story-author { color: var(--forest) !important; font-weight: 600; }
+.story-card-footer { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 24px; }
+.story-card-footer a, .story-card-link { color: var(--forest); font-weight: 700; }
+.story-card-featured { display: grid; grid-template-columns: 1fr 1fr; overflow: hidden; background: var(--cream); }
+.story-card-featured img { height: 100%; min-height: 400px; }
+.story-card-featured .card-body { display: flex; flex-direction: column; justify-content: center; padding: 48px; }
+.story-card-featured .card-body h3 { font-size: clamp(2rem, 4vw, 3rem); }
+.story-card-featured .story-card-link { align-self: flex-start; margin-top: 20px; color: #fff; }
 
 .about-top { padding: 100px 0; background: var(--cream); }
 .about-grid { display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: 80px; }
@@ -160,6 +170,7 @@ h3 { font-size: 1.65rem; }
 	.impact-note { right: 16px; }
 	.stats-grid, .impact-stats { grid-template-columns: repeat(2, 1fr); }
 	.card-grid, .wire-stories, .wire-steps { grid-template-columns: 1fr; gap: 22px; }
+	.story-card-featured { grid-template-columns: 1fr; }
 	.about-grid img { height: 360px; }
 	.page-hero { padding: 80px 0; }
 	.footer-grid { grid-template-columns: 1fr 1fr; gap: 30px; }

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import Loading from '../../components/Loading'
 import ErrorMessage from '../../components/ErrorMessage'
 import Card from '../../components/Card'
+import EmptyState from '../../components/EmptyState'
 import {
   getRecurringDonations,
   pauseRecurringDonation,
@@ -209,17 +210,10 @@ export default function DonorRecurringDonations() {
             ))}
           </div>
         ) : (
-          <Card>
-            <div className="text-center py-12">
-              <p className="text-lg font-medium text-gray-600">
-                No active recurring donations
-              </p>
-              <p className="mt-2 text-sm text-gray-500">
-                Set up a recurring donation to support environmental organizations
-                on a monthly basis
-              </p>
-            </div>
-          </Card>
+          <EmptyState
+            title="No active recurring donations"
+            message="Set up a recurring donation to support environmental organizations on a monthly basis"
+          />
         )}
       </div>
     </main>

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useAuth } from '../context/AuthContext'
 
 function AuthModal({ onClose, onLoginSuccess }) {
 	const [mode, setMode] = useState('login')
@@ -7,6 +8,7 @@ function AuthModal({ onClose, onLoginSuccess }) {
 	const [password, setPassword] = useState('')
 	const [loading, setLoading] = useState(false)
 	const [error, setError] = useState('')
+	const { login, register } = useAuth()
 
 	const handleSubmit = (e) => {
 		e.preventDefault()
@@ -23,25 +25,13 @@ function AuthModal({ onClose, onLoginSuccess }) {
 		}
 
 		setLoading(true)
-
-		// Temporary authentication.
-		// Replace this with your real backend authentication later.
-		setTimeout(() => {
-			const user = {
-				name: mode === 'register'
-					? name
-					: email.split('@')[0],
-				email,
-			}
-
-			localStorage.setItem('user', JSON.stringify(user))
-
-			setLoading(false)
-
-			if (onLoginSuccess) {
-				onLoginSuccess(user)
-			}
-		}, 700)
+		const action = mode === 'login'
+			? login({ email, password })
+			: register({ name, email, password })
+		action
+			.then((user) => onLoginSuccess?.(user))
+			.catch((err) => setError(err.message))
+			.finally(() => setLoading(false))
 	}
 
 	return (

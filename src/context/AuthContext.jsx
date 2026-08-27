@@ -11,7 +11,12 @@ function userFromResponse(response) {
 }
 
 function tokenFromResponse(response) {
-  return response.token || response.accessToken || response.data?.token || response.data?.accessToken
+  return response.access_token || response.token || response.accessToken || response.data?.access_token || response.data?.token || response.data?.accessToken
+}
+
+export function getUserRole(user) {
+  const role = user?.role || user?.userType || user?.user_type || user?.role_name || ''
+  return role.toLowerCase().replace('organisation', 'organization')
 }
 
 export function AuthProvider({ children }) {

@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 import Loading from '../../components/Loading'
 import ErrorMessage from '../../components/ErrorMessage'
 import Card from '../../components/Card'
+import Pagination from '../../components/Pagination'
+import EmptyState from '../../components/EmptyState'
 import { getOrganizationDonations } from '../../services/donationApi'
 
 const DEFAULT_PAGE_SIZE = 10
@@ -145,56 +147,10 @@ export default function OrganizationDonations() {
               </Card>
             ))}
 
-            {/* Pagination */}
-            {totalPages > 1 && (
-              <div className="mt-8 flex items-center justify-center gap-2">
-                <button
-                  onClick={() => setPage(Math.max(1, page - 1))}
-                  disabled={page === 1}
-                  className="rounded-full border border-gray-300 px-4 py-2 font-semibold text-gray-700 transition hover:bg-gray-100 disabled:opacity-50"
-                >
-                  Previous
-                </button>
-
-                <div className="flex items-center gap-1">
-                  {Array.from({ length: Math.min(5, totalPages) }, (_, i) =>
-                    page <= 3 ? i + 1 : page - 2 + i
-                  ).map((p) => (
-                    <button
-                      key={p}
-                      onClick={() => setPage(p)}
-                      className={`h-10 w-10 rounded-full font-semibold transition ${
-                        page === p
-                          ? 'bg-[#183b2b] text-white'
-                          : 'border border-gray-300 text-gray-700 hover:bg-gray-100'
-                      }`}
-                    >
-                      {p}
-                    </button>
-                  ))}
-                </div>
-
-                <button
-                  onClick={() => setPage(Math.min(totalPages, page + 1))}
-                  disabled={page === totalPages}
-                  className="rounded-full border border-gray-300 px-4 py-2 font-semibold text-gray-700 transition hover:bg-gray-100 disabled:opacity-50"
-                >
-                  Next
-                </button>
-              </div>
-            )}
+            <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
           </div>
         ) : (
-          <Card>
-            <div className="text-center py-12">
-              <p className="text-lg font-medium text-gray-600">
-                No donations yet
-              </p>
-              <p className="mt-2 text-sm text-gray-500">
-                Donations will appear here once you receive them
-              </p>
-            </div>
-          </Card>
+          <EmptyState title="No donations yet" message="Donations will appear here once you receive them" />
         )}
       </div>
     </main>
