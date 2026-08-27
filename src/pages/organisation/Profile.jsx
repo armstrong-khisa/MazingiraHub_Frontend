@@ -145,7 +145,7 @@ export default function OrganizationProfile() {
                 <div>
                   <p className="text-sm font-medium text-gray-600">Focus Area</p>
                   <p className="mt-1 text-lg text-[#183b2b]">
-                    {profile?.focusArea || 'N/A'}
+                    {profile?.mission || 'N/A'}
                   </p>
                 </div>
 
@@ -229,30 +229,17 @@ export default function OrganizationProfile() {
                 />
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Focus Area
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">
+                  Mission
                 </label>
-                <select
-                  name="focusArea"
-                  value={formData.focusArea || ''}
+                <textarea
+                  name="mission"
+                  value={formData.mission || ''}
                   onChange={handleChange}
+                  rows={3}
                   className="mt-2 w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-[#183b2b] focus:outline-none"
-                >
-                  <option value="">Select a focus area</option>
-                  <option value="Environment & conservation">
-                    Environment & Conservation
-                  </option>
-                  <option value="Education">Education</option>
-                  <option value="Health & wellbeing">
-                    Health & Wellbeing
-                  </option>
-                  <option value="Livelihoods">Livelihoods</option>
-                  <option value="Community development">
-                    Community Development
-                  </option>
-                  <option value="Other">Other</option>
-                </select>
+                />
               </div>
 
               <div>
