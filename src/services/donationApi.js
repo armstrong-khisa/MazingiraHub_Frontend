@@ -32,7 +32,7 @@ export async function createRecurringDonation(payload) {
 }
 
 export async function updateRecurringDonation(id, payload) {
-  return apiRequest(`/api/recurring-donations/${id}`, { method: 'PUT', body: payload })
+  return apiRequest(`/api/recurring-donations/${id}`, { method: 'PATCH', body: payload })
 }
 
 export async function pauseRecurringDonation(id) {

@@ -7,7 +7,8 @@ export async function getOrganizationProfile() {
 }
 
 export async function updateOrganizationProfile(payload) {
-  return apiRequest('/api/organization/profile', { method: 'PUT', body: payload })
+  const data = await apiRequest('/api/organization/profile', { method: 'PUT', body: payload })
+  return data.profile || data.organization || data.organisation || data.data || data
 }
 
 // Organization Donors
