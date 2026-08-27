@@ -3,12 +3,14 @@ import { Link, useParams } from 'react-router-dom'
 import Loading from '../components/Loading'
 import ErrorMessage from '../components/ErrorMessage'
 import { getOrganization } from '../services/organizationApi'
+import DonationModal from '../modals/Donation'
 
 function OrganizationDetails() {
 	const { id } = useParams()
 	const [organization, setOrganization] = useState(null)
 	const [loading, setLoading] = useState(true)
 	const [error, setError] = useState('')
+	const [donationOpen, setDonationOpen] = useState(false)
 
 	useEffect(() => {
 		let active = true
@@ -62,7 +64,6 @@ function OrganizationDetails() {
 	const goal = Number(organization.goal || organization.targetAmount || 0)
 	const percentage = goal ? Math.min(Math.round((raised / goal) * 100), 100) : 0
 	const remaining = Math.max(goal - raised, 0)
-	const organizationId = organization._id || organization.id || id
 	const image = organization.logo || organization.image || organization.imageUrl
 	const impact = Array.isArray(organization.impact) ? organization.impact : []
 	const about = organization.about || organization.description || ''
@@ -226,12 +227,13 @@ function OrganizationDetails() {
 								being done by this organization.
 							</p>
 
-							<Link
-								to={`/organizations/${organizationId}/donate`}
+							<button
+								type="button"
+								onClick={() => setDonationOpen(true)}
 								className="mt-6 flex w-full items-center justify-center rounded-full bg-[#183b2b] px-6 py-4 text-sm font-bold text-white transition hover:bg-[#24543e]"
 							>
 								Donate Now
-							</Link>
+							</button>
 
 							<p className="mt-4 text-center text-xs text-gray-400">
 								Every contribution makes a difference.
@@ -264,14 +266,16 @@ function OrganizationDetails() {
 						change for communities and ecosystems.
 					</p>
 
-					<Link
-						to={`/organizations/${organizationId}/donate`}
+					<button
+						type="button"
+						onClick={() => setDonationOpen(true)}
 						className="mt-8 inline-flex rounded-full bg-white px-8 py-4 text-sm font-bold text-[#183b2b] transition hover:bg-[#e8f5ed]"
 					>
 						Donate to {organization.name}
-					</Link>
+					</button>
 				</div>
 			</section>
+			{donationOpen && <DonationModal organization={organization} onClose={() => setDonationOpen(false)} />}
 		</>
 	)
 }

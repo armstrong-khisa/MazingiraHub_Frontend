@@ -4,6 +4,7 @@ import OrganizationCard from '../components/OrganizationCard'
 import Loading from '../components/Loading'
 import ErrorMessage from '../components/ErrorMessage'
 import { getOrganizations } from '../services/organizationApi'
+import DonationModal from '../modals/Donation'
 
 const categories = [
 	'All Organizations',
@@ -20,6 +21,7 @@ function Organizations() {
 	const [organizations, setOrganizations] = useState([])
 	const [loading, setLoading] = useState(true)
 	const [error, setError] = useState('')
+	const [selectedOrganization, setSelectedOrganization] = useState(null)
 
 	useEffect(() => {
 		let active = true
@@ -139,10 +141,12 @@ function Organizations() {
 								<OrganizationCard
 									key={organization._id || organization.id}
 									organisation={organization}
+									onDonate={setSelectedOrganization}
 								/>
 							))}
 						</div>
 					)}
+					{selectedOrganization && <DonationModal organization={selectedOrganization} onClose={() => setSelectedOrganization(null)} />}
 				</div>
 			</section>
 

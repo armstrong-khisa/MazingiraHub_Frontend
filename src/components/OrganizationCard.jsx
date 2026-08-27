@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 
-export default function OrganizationCard({ organisation }) {
+export default function OrganizationCard({ organisation, onDonate }) {
   const id = organisation._id || organisation.id
   const name = organisation.name || organisation.organisationName || 'Community organisation'
   const location = organisation.location || organisation.county || organisation.address || 'Kenya'
@@ -26,7 +26,9 @@ export default function OrganizationCard({ organisation }) {
             <p className="organization-goal">Goal: KES {goal.toLocaleString()}</p>
           </>
         )}
-        {id && <Link className="button card-button" to={`/organizations/${id}`}>View organization</Link>}
+        {id && (
+          onDonate ? <button className="button card-button" type="button" onClick={() => onDonate(organisation)}>Donate</button> : <Link className="button card-button" to={`/organizations/${id}`}>View organization</Link>
+        )}
       </div>
     </article>
   )

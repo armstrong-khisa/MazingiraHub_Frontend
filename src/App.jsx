@@ -12,12 +12,8 @@ import About from './pages/About'
 import HowItWorks from './pages/HowItWorks'
 import Organizations from './pages/Organizations'
 import OrganizationDetails from './pages/OrganizationDetails'
-import Donate from './pages/Donate'
-import DonationSuccess from './pages/DonationSuccess'
 import Stories from './pages/Stories'
 import ApplyOrganization from './pages/ApplyOrganization'
-import Login from './pages/Login'
-import Register from './pages/Register'
 import NotFound from './pages/NotFound'
 
 // Donor pages
@@ -56,15 +52,11 @@ function App() {
           path="/organizations/:id"
           element={<OrganizationDetails />}
         />
-        <Route path="/organizations/:id/donate" element={<Donate />} />
-        <Route path="/donation-success" element={<DonationSuccess />} />
         <Route path="/stories" element={<Stories />} />
         <Route
           path="/apply-organization"
           element={<ApplyOrganization />}
         />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
 
         {/* Donor Routes */}
         <Route

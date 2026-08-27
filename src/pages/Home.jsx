@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import OrganizationCard from '../components/OrganizationCard'
 import Loading from '../components/Loading'
 import ErrorMessage from '../components/ErrorMessage'
+import DonationModal from '../modals/Donation'
 import { getOrganizations } from '../services/organizationApi'
 
 const stats = [
@@ -28,6 +29,7 @@ function Home() {
 	const [organizations, setOrganizations] = useState([])
 	const [loadingOrganizations, setLoadingOrganizations] = useState(true)
 	const [organizationError, setOrganizationError] = useState('')
+	const [selectedOrganization, setSelectedOrganization] = useState(null)
 
 	useEffect(() => {
 		let active = true
@@ -175,10 +177,11 @@ function Home() {
 				{loadingOrganizations ? <Loading /> : (
 					<div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
 						{organizations.map((organization) => (
-							<OrganizationCard key={organization._id || organization.id} organisation={organization} />
+							<OrganizationCard key={organization._id || organization.id} organisation={organization} onDonate={setSelectedOrganization} />
 						))}
 					</div>
 				)}
+				{selectedOrganization && <DonationModal organization={selectedOrganization} onClose={() => setSelectedOrganization(null)} />}
 			</section>
 
 			{/* CTA */}
