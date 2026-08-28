@@ -70,11 +70,11 @@ function AuthModal({ onClose, onLoginSuccess }) {
 
 	return (
 		<div
-			className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 px-4 backdrop-blur-sm"
+			className="fixed inset-0 z-[100] flex items-start justify-center overflow-y-auto bg-black/50 px-4 py-4 backdrop-blur-sm sm:items-center sm:py-8"
 			onClick={onClose}
 		>
 			<div
-				className="relative w-full max-w-md rounded-2xl bg-white p-8 shadow-2xl"
+				className="relative my-auto max-h-[calc(100vh-2rem)] w-full max-w-md overflow-y-auto rounded-2xl bg-white p-5 shadow-2xl sm:p-8"
 				onClick={(e) => e.stopPropagation()}
 			>
 				{/* Close */}

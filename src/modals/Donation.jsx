@@ -2,8 +2,12 @@ import { useState } from 'react'
 import { X } from 'lucide-react'
 import AuthModal from './Auth'
 import { useAuth } from '../context/AuthContext'
-import { createDonation } from '../services/donationApi'
-import { initiateMpesaPayment } from '../services/paymentApi'
+import { createDonation, createRecurringDonation } from '../services/donationApi'
+import {
+	createPaypalCheckout,
+	createStripeCheckout,
+	initiateMpesaPayment,
+} from '../services/paymentApi'
 
 export default function DonationModal({
 	organization,
@@ -14,6 +18,9 @@ export default function DonationModal({
 	const [projectId, setProjectId] = useState('')
 	const [phoneNumber, setPhoneNumber] = useState('')
 	const [anonymous, setAnonymous] = useState(false)
+	const [donationType, setDonationType] = useState('one-time')
+	const [paymentProvider, setPaymentProvider] = useState('mpesa')
+	const [reminderTime, setReminderTime] = useState('09:00')
 	const [error, setError] = useState('')
 	const [submitting, setSubmitting] = useState(false)
 
@@ -47,7 +54,7 @@ export default function DonationModal({
 		}
 
 		const normalizedPhone = normalizePhone(phoneNumber || user?.phone || '')
-		if (!/^2547\d{8}$/.test(normalizedPhone)) {
+		if (paymentProvider === 'mpesa' && !/^2547\d{8}$/.test(normalizedPhone)) {
 			setError('Enter a valid Kenyan phone number, for example 0712345678.')
 			return
 		}
@@ -56,23 +63,39 @@ export default function DonationModal({
 		setError('')
 
 		try {
-			const donationResponse = await createDonation({
+			const donationPayload = {
 				organization_id: Number(organizationId),
 				...(projectId && {
 					project_id: Number(projectId),
 				}),
 				amount: Number(amount),
 				currency: 'KES',
-				donation_type: 'one-time',
+				donation_type: donationType,
 				is_anonymous: anonymous,
-			})
+				payment_provider: paymentProvider,
+				...(donationType === 'recurring' && { reminder_time: reminderTime }),
+			}
+			const donationResponse = donationType === 'recurring'
+				? await createRecurringDonation(donationPayload)
+				: await createDonation(donationPayload)
 			const donationId = donationResponse.donation?.id || donationResponse.id
 			if (!donationId) throw new Error('Donation was created without an ID.')
 
-			await initiateMpesaPayment({
+			const paymentPayload = {
 				donation_id: donationId,
-				phone_number: normalizedPhone,
-			})
+				amount: Number(amount),
+				currency: 'KES',
+				...(paymentProvider === 'mpesa' && { phone_number: normalizedPhone }),
+			}
+			if (paymentProvider === 'mpesa') {
+				await initiateMpesaPayment(paymentPayload)
+			} else if (paymentProvider === 'paypal') {
+				const checkout = await createPaypalCheckout(paymentPayload)
+				if (checkout.approvalUrl) window.location.assign(checkout.approvalUrl)
+			} else {
+				const checkout = await createStripeCheckout(paymentPayload)
+				if (checkout.checkoutUrl) window.location.assign(checkout.checkoutUrl)
+			}
 
 			onSuccess?.()
 			onClose()
@@ -85,11 +108,11 @@ export default function DonationModal({
 
 	return (
 		<div
-			className="fixed inset-0 z-[100] flex items-center justify-center bg-[#10251c]/60 px-4 py-6 backdrop-blur-sm"
+			className="fixed inset-0 z-[100] flex items-start justify-center overflow-y-auto bg-[#10251c]/60 px-3 py-3 backdrop-blur-sm sm:items-center sm:px-4 sm:py-6"
 			onClick={onClose}
 		>
 			<div
-				className="relative max-h-[calc(100vh-2rem)] w-full max-w-md overflow-y-auto rounded-2xl bg-white shadow-2xl"
+				className="relative my-auto max-h-[calc(100vh-1.5rem)] w-full max-w-md overflow-y-auto rounded-2xl bg-white shadow-2xl sm:max-h-[calc(100vh-2rem)]"
 				onClick={(event) => event.stopPropagation()}
 			>
 				{/* HEADER */}
@@ -119,7 +142,7 @@ export default function DonationModal({
 				{/* FORM */}
 				<form
 					onSubmit={handleSubmit}
-					className="space-y-4 px-6 py-4"
+					className="space-y-4 px-4 py-4 sm:px-6"
 				>
 					{/* ERROR */}
 					{error && (
@@ -207,15 +230,39 @@ export default function DonationModal({
 					</div>
 
 					<div>
+						<label htmlFor="donation-type" className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-gray-500">Frequency</label>
+						<select id="donation-type" value={donationType} onChange={(event) => setDonationType(event.target.value)} className="w-full rounded-xl border border-gray-200 bg-gray-50 px-3.5 py-2.5 text-sm text-gray-700 outline-none focus:border-[#23945c]">
+							<option value="one-time">One-time donation</option>
+							<option value="recurring">Monthly donation</option>
+						</select>
+					</div>
+
+					{donationType === 'recurring' && (
+						<div>
+							<label htmlFor="reminder-time" className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-gray-500">Monthly reminder time</label>
+							<input id="reminder-time" type="time" value={reminderTime} onChange={(event) => setReminderTime(event.target.value)} className="w-full rounded-xl border border-gray-200 bg-gray-50 px-3.5 py-2.5 text-sm text-gray-700 outline-none focus:border-[#23945c]" />
+						</div>
+					)}
+
+					<div>
+						<label htmlFor="payment-provider" className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-gray-500">Payment method</label>
+						<select id="payment-provider" value={paymentProvider} onChange={(event) => setPaymentProvider(event.target.value)} className="w-full rounded-xl border border-gray-200 bg-gray-50 px-3.5 py-2.5 text-sm text-gray-700 outline-none focus:border-[#23945c]">
+							<option value="mpesa">M-Pesa</option>
+							<option value="paypal">PayPal</option>
+							<option value="stripe">Stripe</option>
+						</select>
+					</div>
+
+					<div>
 						<label
 							htmlFor="donation-phone"
 							className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-gray-500"
 						>
-							M-Pesa Phone Number
+							{paymentProvider === 'mpesa' ? 'M-Pesa Phone Number' : 'Phone Number (Optional)'}
 						</label>
 						<input
 							id="donation-phone"
-							required
+							required={paymentProvider === 'mpesa'}
 							type="tel"
 							value={phoneNumber || user?.phone || ''}
 							onChange={(event) => setPhoneNumber(event.target.value)}

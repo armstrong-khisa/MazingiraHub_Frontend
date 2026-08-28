@@ -8,6 +8,20 @@ export async function initiateMpesaPayment(payload) {
   return data
 }
 
+export async function createPaypalCheckout(payload) {
+  return apiRequest('/api/payments/paypal/create-order', {
+    method: 'POST',
+    body: payload,
+  })
+}
+
+export async function createStripeCheckout(payload) {
+  return apiRequest('/api/payments/stripe/create-checkout-session', {
+    method: 'POST',
+    body: payload,
+  })
+}
+
 export async function queryMpesaPayment(checkoutRequestId) {
   return apiRequest(`/api/payments/mpesa/query/${encodeURIComponent(checkoutRequestId)}`)
 }

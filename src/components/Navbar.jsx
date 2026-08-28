@@ -1,12 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
-import { ArrowUpRight, House, LogOut } from 'lucide-react'
+import { ArrowUpRight, House, LogOut, Menu, X } from 'lucide-react'
 import AuthModal from '../modals/Auth'
 import { getUserRole, useAuth } from '../context/AuthContext'
 
 function Navbar() {
 	const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
 	const [isProfileOpen, setIsProfileOpen] = useState(false)
+	const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
 	const { user, isAuthenticated, logout } = useAuth()
 
@@ -55,6 +56,8 @@ function Navbar() {
 		// replace prevents going back to the protected page
 		navigate('/', { replace: true })
 	}
+
+	const closeMobileMenu = () => setIsMobileMenuOpen(false)
 
 	// Navigate to the correct dashboard based on role
 	const handleDashboard = () => {
@@ -182,8 +185,18 @@ function Navbar() {
 
 					</nav>
 
+					<nav className={`${isMobileMenuOpen ? 'flex' : 'hidden'} absolute left-0 right-0 top-20 flex-col gap-2 border-b border-black/5 bg-[#f7f8f3] px-6 py-4 shadow-lg md:hidden`}>
+						{['/', '/organizations', '/stories', '/how-it-works', '/about'].map((path) => {
+							const labels = { '/': 'Home', '/organizations': 'Organizations', '/stories': 'Stories', '/how-it-works': 'How It Works', '/about': 'About' }
+							return <NavLink key={path} to={path} onClick={closeMobileMenu} className="rounded-lg px-3 py-3 text-sm font-semibold text-gray-600 hover:bg-white hover:text-[#183b2b]">{labels[path]}</NavLink>
+						})}
+					</nav>
+
 					{/* Right side */}
 					<div className="flex items-center gap-3">
+						<button type="button" onClick={() => setIsMobileMenuOpen((open) => !open)} className="flex h-10 w-10 items-center justify-center rounded-full border border-black/10 text-[#183b2b] md:hidden" aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}>
+							{isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+						</button>
 
 						{/* Sign In / Profile */}
 						{!isAuthenticated ? (
@@ -237,7 +250,7 @@ function Navbar() {
 
 								{/* Profile dropdown */}
 								{isProfileOpen && (
-									<div className="absolute right-0 mt-3 w-64 overflow-hidden rounded-2xl border border-black/5 bg-white shadow-xl">
+									<div className="absolute right-0 mt-3 w-[min(16rem,calc(100vw-2rem))] max-w-[calc(100vw-2rem)] overflow-hidden rounded-2xl border border-black/5 bg-white shadow-xl">
 
 										{/* User information */}
 										<div className="border-b border-gray-100 px-5 py-4">

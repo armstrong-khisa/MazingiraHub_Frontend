@@ -8,6 +8,7 @@ import {
   getOrganizations,
   deactivateOrganization,
   activateOrganization,
+  deleteOrganization,
 } from '../../services/adminApi'
 
 const DEFAULT_PAGE_SIZE = 10
@@ -72,6 +73,23 @@ export default function AdminOrganisations() {
       setError('')
       await activateOrganization(id)
       setSuccess('Organization activated!')
+      await fetchOrganizations()
+      setTimeout(() => setSuccess(''), 3000)
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setActionLoading(null)
+    }
+  }
+
+  const handleDelete = async (id) => {
+    if (!confirm('Are you sure you want to permanently delete this organization?')) return
+
+    try {
+      setActionLoading(id)
+      setError('')
+      await deleteOrganization(id)
+      setSuccess('Organization deleted!')
       await fetchOrganizations()
       setTimeout(() => setSuccess(''), 3000)
     } catch (err) {
@@ -202,6 +220,15 @@ export default function AdminOrganisations() {
                             : 'Activate'}
                         </button>
                       )}
+                      <button
+                        onClick={() => handleDelete(org._id || org.id)}
+                        disabled={actionLoading === (org._id || org.id)}
+                        className="text-sm text-red-700 hover:underline disabled:opacity-50"
+                      >
+                        {actionLoading === (org._id || org.id)
+                          ? 'Deleting...'
+                          : 'Delete permanently'}
+                      </button>
                     </div>
 
                     {org.totalDonations && (

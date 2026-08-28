@@ -48,6 +48,10 @@ export async function activateOrganization(id) {
   return apiRequest(`/api/admin/organizations/${id}/activate`, { method: 'PATCH' })
 }
 
+export async function deleteOrganization(id) {
+  return apiRequest(`/api/admin/organizations/${id}`, { method: 'DELETE' })
+}
+
 // Admin Dashboard Stats
 export async function getAdminStats() {
   const data = await apiRequest('/api/admin/stats')
