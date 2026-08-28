@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import OrganizationCard from '../components/OrganizationCard'
 import Loading from '../components/Loading'
 import ErrorMessage from '../components/ErrorMessage'
 import { getOrganizations } from '../services/organizationApi'
 import DonationModal from '../modals/Donation'
+import AuthModal from '../modals/Auth'
+import { useAuth } from '../context/AuthContext'
 
 const categories = [
 	'All Organizations',
@@ -22,6 +24,17 @@ function Organizations() {
 	const [loading, setLoading] = useState(true)
 	const [error, setError] = useState('')
 	const [selectedOrganization, setSelectedOrganization] = useState(null)
+	const [authOpen, setAuthOpen] = useState(false)
+	const { isAuthenticated } = useAuth()
+	const navigate = useNavigate()
+
+	const handleCreateOrganization = () => {
+		if (isAuthenticated) {
+			navigate('/apply-organization')
+		} else {
+			setAuthOpen(true)
+		}
+	}
 
 	useEffect(() => {
 		let active = true
@@ -117,12 +130,15 @@ function Organizations() {
 							</h2>
 						</div>
 
-						<p className="text-sm text-gray-500">
-							{filteredOrganizations.length}{' '}
-							{filteredOrganizations.length === 1
-								? 'organization'
-								: 'organizations'}
-						</p>
+						<div className="flex flex-col items-start gap-3 sm:items-end">
+							<p className="text-sm text-gray-500">
+								{filteredOrganizations.length}{' '}
+								{filteredOrganizations.length === 1 ? 'organization' : 'organizations'}
+							</p>
+							<button type="button" onClick={handleCreateOrganization} className="rounded-full bg-[#183b2b] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#24543e]">
+								Create an organization
+							</button>
+						</div>
 					</div>
 
 					{filteredOrganizations.length === 0 ? (
@@ -147,6 +163,7 @@ function Organizations() {
 						</div>
 					)}
 					{selectedOrganization && <DonationModal organization={selectedOrganization} onClose={() => setSelectedOrganization(null)} />}
+					{authOpen && <AuthModal onClose={() => setAuthOpen(false)} onLoginSuccess={() => { setAuthOpen(false); navigate('/apply-organization') }} />}
 				</div>
 			</section>
 

@@ -58,7 +58,11 @@ function App() {
         <Route path="/stories/:id" element={<StoryDetails />} />
         <Route
           path="/apply-organization"
-          element={<ApplyOrganization />}
+          element={
+            <ProtectedRoute>
+              <ApplyOrganization />
+            </ProtectedRoute>
+          }
         />
 
         {/* Donor Routes */}
