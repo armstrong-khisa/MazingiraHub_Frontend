@@ -7,4 +7,16 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
+  test: {
+    environment: 'jsdom',
+    environmentOptions: {
+      jsdom: {
+        url: 'http://localhost',
+      },
+    },
+    setupFiles: './src/test/setup.js',
+    pool: 'threads',
+    maxWorkers: 1,
+    minWorkers: 1,
+  },
 })
