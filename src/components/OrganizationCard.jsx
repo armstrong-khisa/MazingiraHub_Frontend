@@ -20,12 +20,11 @@ export default function OrganizationCard({ organisation, onDonate }) {
 		organisation.description ||
 		organisation.summary ||
 		'Working with communities to create lasting positive change.'
-
-	const image =
-		organisation.logo ||
-		organisation.image ||
-		organisation.imageUrl
-
+    const image =
+         organisation.logo ||
+         organisation.image ||
+         organisation.imageUrl ||
+          organisation.image_url
 	// Support the different possible API field names
 	const raised = Number(
 		organisation.amountRaised ??

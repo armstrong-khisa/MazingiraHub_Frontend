@@ -25,10 +25,11 @@ export default function StoryCard({ story = {}, reverse = false }) {
 		story.publishedAt ||
 		story.createdAt
 
-	const image =
-		story.image ||
-		story.imageUrl ||
-		story.coverImage
+	 const image =
+    story.image ||
+    story.imageUrl ||
+    story.coverImage ||
+    story.media?.[0]?.media_url
 
 	const formattedDate = date
 		? new Date(date).toLocaleDateString('en-US', {
