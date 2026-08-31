@@ -5,26 +5,23 @@ import OrganizationCard from '../components/OrganizationCard'
 import Loading from '../components/Loading'
 import ErrorMessage from '../components/ErrorMessage'
 import DonationModal from '../modals/Donation'
-import { getOrganizations } from '../services/organizationApi'
+import { getOrganizations, getPublicStats } from '../services/organizationApi'
 
-const stats = [
-	{
-		number: '42',
-		label: 'Organizations Supported',
-	},
-	{
-		number: 'KES 4.8M',
-		label: 'Total Donations',
-	},
-	{
-		number: '85',
-		label: 'Environmental Projects',
-	},
-	{
-		number: '3,600+',
-		label: 'Active Donors',
-	},
-]
+/** Format a raw KES number into a human-readable string, e.g. 4800000 → "KES 4.8M" */
+function formatKES(amount) {
+	const n = Number(amount)
+	if (!n) return 'KES 0'
+	if (n >= 1_000_000) return `KES ${(n / 1_000_000).toFixed(1).replace(/\.0$/, '')}M`
+	if (n >= 1_000) return `KES ${(n / 1_000).toFixed(1).replace(/\.0$/, '')}K`
+	return `KES ${n.toLocaleString()}`
+}
+
+/** Format a raw count into a compact string, e.g. 3600 → "3,600+" */
+function formatCount(count, showPlus = false) {
+	const n = Number(count)
+	if (!n) return '0'
+	return n.toLocaleString() + (showPlus ? '+' : '')
+}
 
 function Home() {
 	const [organizations, setOrganizations] = useState([])
@@ -32,22 +29,67 @@ function Home() {
 	const [organizationError, setOrganizationError] = useState('')
 	const [selectedOrganization, setSelectedOrganization] = useState(null)
 
+	// Platform-wide stats
+	const [platformStats, setPlatformStats] = useState(null)
+	const [loadingStats, setLoadingStats] = useState(true)
+
 	useEffect(() => {
 		let active = true
-		getOrganizations()
-			.then((data) => {
-				if (active) setOrganizations(Array.isArray(data) ? data.slice(0, 3) : [])
-			})
-			.catch((err) => {
-				if (active) setOrganizationError(err.message)
-			})
-			.finally(() => {
-				if (active) setLoadingOrganizations(false)
-			})
+
+		// Fetch organizations and stats in parallel
+		Promise.allSettled([
+			getOrganizations(),
+			getPublicStats(),
+		]).then(([orgsResult, statsResult]) => {
+			if (!active) return
+
+			if (orgsResult.status === 'fulfilled') {
+				setOrganizations(Array.isArray(orgsResult.value) ? orgsResult.value.slice(0, 3) : [])
+			} else {
+				setOrganizationError(orgsResult.reason?.message || 'Failed to load organizations.')
+			}
+
+			if (statsResult.status === 'fulfilled') {
+				setPlatformStats(statsResult.value)
+			}
+			// Stats silently fall back to null — fallback UI handles it
+
+			setLoadingOrganizations(false)
+			setLoadingStats(false)
+		})
+
 		return () => {
 			active = false
 		}
 	}, [])
+
+	// Build the stats row: use live data when available, otherwise show "—"
+	const stats = [
+		{
+			number: platformStats
+				? formatCount(platformStats.totalOrganizations ?? platformStats.organizationCount)
+				: loadingStats ? '…' : '—',
+			label: 'Organizations Supported',
+		},
+		{
+			number: platformStats
+				? formatKES(platformStats.totalDonations ?? platformStats.totalDonationAmount)
+				: loadingStats ? '…' : '—',
+			label: 'Total Donations',
+		},
+		{
+			number: platformStats
+				? formatCount(platformStats.totalProjects ?? platformStats.projectCount ?? platformStats.approvedOrganizations)
+				: loadingStats ? '…' : '—',
+			label: 'Environmental Projects',
+		},
+		{
+			number: platformStats
+				? formatCount(platformStats.totalDonors ?? platformStats.donorCount, true)
+				: loadingStats ? '…' : '—',
+			label: 'Active Donors',
+		},
+	]
 
 	return (
 		<>
