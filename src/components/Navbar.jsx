@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
-import { ArrowUpRight, House, LogOut, Menu, X } from 'lucide-react'
+import { House, LogOut, Menu, X } from 'lucide-react'
 import AuthModal from '../modals/Auth'
 import { getUserRole, useAuth } from '../context/AuthContext'
 
@@ -106,9 +106,36 @@ function Navbar() {
 						to="/"
 						className="flex items-center gap-3"
 					>
-						<div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#183b2b] text-xl text-white">
-							<ArrowUpRight className="h-5 w-5" aria-hidden="true" />
-						</div>
+						<svg
+							className="h-10 w-10 shrink-0"
+							viewBox="0 0 40 40"
+							role="img"
+							aria-label="MazingiraHub logo"
+						>
+							<rect width="40" height="40" rx="11" fill="#145c36" />
+							<path
+								d="M11.7 23.3c0-7.3 5.8-12 16.7-13.4 1.4 10.9-3.4 16.7-10.6 16.7-2.2 0-4.3-.7-6.1-3.3Z"
+								fill="none"
+								stroke="#ffffff"
+								strokeWidth="2.2"
+								strokeLinecap="round"
+								strokeLinejoin="round"
+							/>
+							<path
+								d="M11.8 29.1c2.5-6.6 7.5-10.6 14.6-12"
+								fill="none"
+								stroke="#ffffff"
+								strokeWidth="2.2"
+								strokeLinecap="round"
+							/>
+							<path
+								d="M16.8 22.7c-.3-2.1.1-4 1.2-5.7"
+								fill="none"
+								stroke="#ffffff"
+								strokeWidth="2.2"
+								strokeLinecap="round"
+							/>
+						</svg>
 
 						<span className="text-xl font-bold tracking-tight">
 							MazingiraHub
