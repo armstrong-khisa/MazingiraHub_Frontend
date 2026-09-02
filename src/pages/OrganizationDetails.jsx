@@ -17,29 +17,28 @@ function OrganizationDetails() {
 	useEffect(() => {
 		let active = true
 
-		setLoading(true)
-		setError('')
-		setOrganization(null)
+		async function fetchOrganization() {
+			try {
+				const data = await getOrganization(id)
 
-		getOrganization(id)
-			.then((data) => {
-				if (active) {
-					setOrganization(data)
-				}
-			})
-			.catch((err) => {
-				if (active) {
-					setError(
-						err?.message ||
-							'Failed to load organization details.'
-					)
-				}
-			})
-			.finally(() => {
-				if (active) {
-					setLoading(false)
-				}
-			})
+				if (!active) return
+
+				setOrganization(data)
+				setError('')
+				setLoading(false)
+			} catch (err) {
+				if (!active) return
+
+				setError(
+					err?.message ||
+						'Failed to load organization details.'
+				)
+
+				setLoading(false)
+			}
+		}
+
+		void fetchOrganization()
 
 		return () => {
 			active = false
@@ -83,17 +82,20 @@ function OrganizationDetails() {
 	}
 
 	/*
-	 * API fields:
+	 * Backend response:
 	 *
-	 * name
-	 * description
-	 * mission
-	 * location
-	 * image_url
-	 * moneyRaised
-	 * approved
-	 * approved_by
-	 * user_id
+	 * {
+	 *   id: 1,
+	 *   name: "Green Future Kenya",
+	 *   description: "...",
+	 *   mission: "...",
+	 *   image_url: "...",
+	 *   location: "Nairobi, Kenya",
+	 *   moneyRaised: 17500,
+	 *   approved: true,
+	 *   approved_by: 1,
+	 *   user_id: 9
+	 * }
 	 */
 
 	const name = organization.name || 'Organization'
@@ -197,14 +199,12 @@ function OrganizationDetails() {
 								</p>
 
 								<h2 className="mt-4 text-3xl font-bold text-[#172033]">
-									{`About ${name}`}
+									About {name}
 								</h2>
 
-								<div className="mt-6">
-									<p className="text-base leading-8 text-gray-500">
-										{description}
-									</p>
-								</div>
+								<p className="mt-6 text-base leading-8 text-gray-500">
+									{description}
+								</p>
 							</div>
 
 							{/* MISSION */}
@@ -233,10 +233,10 @@ function OrganizationDetails() {
 								</div>
 							</div>
 
-							{/* IMPACT */}
+							{/* ENVIRONMENTAL IMPACT */}
 							<div className="mt-7 rounded-3xl bg-white p-7 shadow-sm ring-1 ring-black/5 sm:p-10">
 								<p className="text-sm font-bold tracking-[0.2em] text-[#23945c]">
-									OUR ENVIRONMENTAL IMPACT
+									ENVIRONMENTAL IMPACT
 								</p>
 
 								<h2 className="mt-4 text-3xl font-bold text-[#172033]">
@@ -310,7 +310,9 @@ function OrganizationDetails() {
 								</div>
 
 								<p className="mt-5 text-sm leading-7 text-gray-500">
-									{`This organization operates in ${location}, working with local communities to create positive environmental change.`}
+									This organization operates in{' '}
+									{location}, working with local communities
+									to create positive environmental change.
 								</p>
 							</div>
 						</div>
