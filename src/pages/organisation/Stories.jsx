@@ -103,7 +103,11 @@ export default function OrganizationStories() {
   }, [page])
 
   useEffect(() => {
-    void fetchStories()
+    async function loadStories() {
+      await fetchStories()
+    }
+
+    void loadStories()
   }, [fetchStories])
 
   const resetForm = () => {
