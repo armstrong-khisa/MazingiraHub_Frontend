@@ -18,18 +18,39 @@ export default function StoryCard({ story = {}, reverse = false }) {
 	const category =
 		story.category ||
 		story.focusArea ||
+		story.organization?.name ||
 		'Environmental Action'
 
+	/*
+	 * Support both the API's snake_case fields and
+	 * the camelCase fields used by older frontend data.
+	 */
 	const date =
 		story.date ||
 		story.publishedAt ||
-		story.createdAt
+		story.published_at ||
+		story.createdAt ||
+		story.created_at
 
-	 const image =
-    story.image ||
-    story.imageUrl ||
-    story.coverImage ||
-    story.media?.[0]?.media_url
+	/*
+	 * The API returns media like:
+	 *
+	 * media: [
+	 *   {
+	 *     media_url: '...'
+	 *   }
+	 * ]
+	 *
+	 * Support that as well as the older image fields.
+	 */
+	const image =
+		story.image ||
+		story.imageUrl ||
+		story.image_url ||
+		story.coverImage ||
+		story.cover_image ||
+		story.media?.[0]?.media_url ||
+		story.media?.[0]?.mediaUrl
 
 	const formattedDate = date
 		? new Date(date).toLocaleDateString('en-US', {
@@ -56,10 +77,23 @@ export default function StoryCard({ story = {}, reverse = false }) {
 						alt={title}
 						className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.02]"
 						loading="lazy"
+						onError={(e) => {
+							e.currentTarget.style.display = 'none'
+							e.currentTarget.parentElement?.classList.add(
+								'flex',
+								'items-center',
+								'justify-center',
+								'bg-[#edf7f0]',
+								'text-[#258a56]'
+							)
+						}}
 					/>
 				) : (
 					<div className="flex h-full w-full items-center justify-center bg-[#edf7f0] text-[#258a56]">
-						<Leaf className="h-12 w-12" strokeWidth={1.5} />
+						<Leaf
+							className="h-12 w-12"
+							strokeWidth={1.5}
+						/>
 					</div>
 				)}
 			</div>
@@ -89,13 +123,27 @@ export default function StoryCard({ story = {}, reverse = false }) {
 				<p className="mt-5 max-w-[500px] text-[15px] leading-[1.45] text-[#707987]">
 					{body}
 				</p>
+
+				{/* ORGANIZATION */}
+				{story.organization?.name && (
+					<p className="mt-5 text-[13px] font-medium text-[#258a56]">
+						{story.organization.name}
+					</p>
+				)}
+
+				{/* FEATURED */}
+				{story.featured && (
+					<span className="mt-4 w-fit rounded-full bg-[#fff4cc] px-3 py-1 text-xs font-semibold text-[#8a6800]">
+						Featured
+					</span>
+				)}
 			</div>
 		</article>
 	)
 
 	/*
 	 * Only make the card clickable when an ID exists.
-	 * This preserves your existing /stories/:id route.
+	 * This preserves the existing /stories/:id route.
 	 */
 	if (id) {
 		return (

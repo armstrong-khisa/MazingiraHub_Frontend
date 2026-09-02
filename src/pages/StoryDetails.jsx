@@ -7,6 +7,7 @@ import { getStoryById } from '../services/storyApi'
 
 function StoryDetails() {
 	const { id } = useParams()
+
 	const [story, setStory] = useState(null)
 	const [loading, setLoading] = useState(true)
 	const [error, setError] = useState('')
@@ -22,11 +23,24 @@ function StoryDetails() {
 				const data = await getStoryById(id)
 
 				if (active) {
-					setStory(data)
+					// Supports both:
+					// { ...story }
+					// and { stories: [...] }
+					const fetchedStory = data?.stories
+						? data.stories.find(
+								(item) => String(item.id) === String(id),
+							)
+						: data
+
+					setStory(fetchedStory || null)
 				}
 			} catch (err) {
 				if (active) {
-					setError(err.message)
+					setError(
+						err instanceof Error
+							? err.message
+							: 'Failed to load story.',
+					)
 				}
 			} finally {
 				if (active) {
@@ -42,7 +56,9 @@ function StoryDetails() {
 		}
 	}, [id])
 
-	if (loading) return <Loading />
+	if (loading) {
+		return <Loading />
+	}
 
 	if (error) {
 		return (
@@ -64,7 +80,7 @@ function StoryDetails() {
 
 					<Link
 						to="/stories"
-						className="mt-7 inline-flex items-center rounded-full bg-[#183b2b] px-7 py-3.5 text-sm font-bold text-white"
+						className="mt-7 inline-flex items-center rounded-full bg-[#183b2b] px-7 py-3.5 text-sm font-bold text-white transition hover:bg-[#24523d]"
 					>
 						<ArrowLeft className="mr-2 h-4 w-4" />
 						Back to Stories
@@ -74,49 +90,13 @@ function StoryDetails() {
 		)
 	}
 
-	const title =
-		story.title || 'A community making progress'
+	const title = story.title || 'A community making progress'
 
-	const content =
-		story.content ||
-		story.description ||
-		story.story ||
-		story.excerpt ||
-		''
+	const content = story.content || ''
 
-	const category =
-		story.category ||
-		story.focusArea ||
-		'Environmental Action'
+	const category = story.category || 'Environmental Action'
 
-	const date =
-		story.date ||
-		story.publishedAt ||
-		story.createdAt
-
-	const image =
-		story.image ||
-		story.imageUrl ||
-		story.coverImage
-
-	/* Organization connected to this story */
-	const organization =
-		story.organization ||
-		story.organisation
-
-	const organizationId =
-		organization?._id ||
-		organization?.id ||
-		story.organizationId ||
-		story.organisationId
-
-	const organizationName =
-		organization?.name ||
-		organization?.organizationName ||
-		organization?.organisationName ||
-		story.organizationName ||
-		story.organisationName ||
-		'View Organization'
+	const date = story.created_at
 
 	const formattedDate = date
 		? new Date(date).toLocaleDateString('en-US', {
@@ -126,9 +106,30 @@ function StoryDetails() {
 			})
 		: null
 
+	/*
+	 * The API returns media as an array.
+	 *
+	 * Prefer the newest media item, since your response
+	 * contains older example.test images and newer Unsplash images.
+	 */
+	const image =
+		story.media?.length > 0
+			? story.media[story.media.length - 1]?.media_url
+			: null
+
+	const organizationId =
+		story.organization?.id || story.organization_id
+
+	const organizationName =
+		story.organization?.name || 'Organization'
+
+	const paragraphs = content
+		.split(/\n\s*\n/)
+		.map((paragraph) => paragraph.trim())
+		.filter(Boolean)
+
 	return (
 		<main className="min-h-screen bg-white">
-
 			{/* TOP BACK LINK */}
 			<div className="mx-auto max-w-[1148px] px-6 pt-10 lg:px-0">
 				<Link
@@ -143,18 +144,19 @@ function StoryDetails() {
 			{/* STORY */}
 			<section className="mx-auto max-w-[1148px] px-6 py-12 lg:px-0 lg:py-16">
 				<div className="grid items-center gap-12 lg:grid-cols-[1fr_0.95fr] lg:gap-16">
-
 					{/* LEFT — WORDING */}
 					<div>
-
 						<p className="text-[13px] font-bold uppercase tracking-[0.18em] text-[#258a56]">
 							{category}
 						</p>
 
 						{formattedDate && (
-							<p className="mt-4 text-sm text-[#89919a]">
+							<time
+								dateTime={date}
+								className="mt-4 block text-sm text-[#89919a]"
+							>
 								{formattedDate}
-							</p>
+							</time>
 						)}
 
 						<h1 className="mt-4 text-[40px] font-bold leading-[1.1] tracking-[-0.025em] text-[#172033] sm:text-[48px]">
@@ -162,19 +164,18 @@ function StoryDetails() {
 						</h1>
 
 						{/* PARAGRAPHS */}
-						<div className="mt-7 space-y-5">
-							{content
-								.split(/\n\s*\n/)
-								.filter(Boolean)
-								.map((paragraph, index) => (
+						{paragraphs.length > 0 && (
+							<div className="mt-7 space-y-5">
+								{paragraphs.map((paragraph, index) => (
 									<p
 										key={index}
 										className="text-[16px] leading-[1.75] text-[#626c77]"
 									>
-										{paragraph.trim()}
+										{paragraph}
 									</p>
 								))}
-						</div>
+							</div>
+						)}
 
 						{/* VIEW ORGANIZATION */}
 						{organizationId && (
@@ -183,15 +184,12 @@ function StoryDetails() {
 									to={`/organizations/${organizationId}`}
 									className="inline-flex items-center rounded-full bg-[#183b2b] px-6 py-3.5 text-sm font-bold text-white transition hover:bg-[#24523d]"
 								>
-									{organizationName !== 'View Organization'
-										? `View ${organizationName}`
-										: 'View Organization'}
+									View {organizationName}
 
 									<ArrowRight className="ml-2 h-4 w-4" />
 								</Link>
 							</div>
 						)}
-
 					</div>
 
 					{/* RIGHT — IMAGE */}
@@ -210,10 +208,8 @@ function StoryDetails() {
 							</div>
 						)}
 					</div>
-
 				</div>
 			</section>
-
 		</main>
 	)
 }
