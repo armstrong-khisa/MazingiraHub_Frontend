@@ -1,43 +1,60 @@
 import { Link } from 'react-router-dom'
-import { ArrowRight, Heart, MapPin } from 'lucide-react'
+import { ArrowRight, Heart, MapPin, Check } from 'lucide-react'
 
 export default function OrganizationCard({ organisation, onDonate }) {
-	const id = organisation._id || organisation.id
+	const id = organisation?.id || organisation?._id
 
 	const name =
-		organisation.name ||
-		organisation.organisationName ||
+		organisation?.name ||
+		organisation?.organisationName ||
 		'Community organisation'
 
 	const location =
-		organisation.location ||
-		organisation.county ||
-		organisation.address ||
+		organisation?.location ||
+		organisation?.county ||
+		organisation?.address ||
 		'Kenya'
 
 	const mission =
-		organisation.mission ||
-		organisation.description ||
-		organisation.summary ||
+		organisation?.mission ||
+		organisation?.description ||
+		organisation?.summary ||
 		'Working with communities to create lasting positive change.'
 
+	/*
+	 * Backend field:
+	 * image_url
+	 *
+	 * Keep the other fallbacks for compatibility with
+	 * older organization objects.
+	 */
 	const image =
-		organisation.logo ||
-		organisation.image ||
-		organisation.imageUrl
+		organisation?.image_url ||
+		organisation?.imageUrl ||
+		organisation?.image ||
+		organisation?.logo ||
+		null
 
-	// Support the different possible API field names
+	/*
+	 * Backend field:
+	 * moneyRaised
+	 *
+	 * Keep the other fallbacks for compatibility.
+	 */
 	const raised = Number(
-		organisation.amountRaised ??
-		organisation.raised ??
-		organisation.totalRaised ??
-		organisation.totalCollected ??
-		organisation.amountCollected ??
-		organisation.collectedAmount ??
-		organisation.funding?.amountRaised ??
-		organisation.funding?.raised ??
+		organisation?.moneyRaised ??
+		organisation?.amountRaised ??
+		organisation?.raised ??
+		organisation?.totalRaised ??
+		organisation?.totalCollected ??
+		organisation?.amountCollected ??
+		organisation?.collectedAmount ??
+		organisation?.funding?.amountRaised ??
+		organisation?.funding?.raised ??
 		0
 	)
+
+	const isApproved = organisation?.approved === true
 
 	return (
 		<article className="group flex h-full flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
@@ -49,6 +66,7 @@ export default function OrganizationCard({ organisation, onDonate }) {
 						src={image}
 						alt={`${name} logo`}
 						className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+						loading="lazy"
 					/>
 				) : (
 					<div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-green-50 to-emerald-100">
@@ -56,6 +74,20 @@ export default function OrganizationCard({ organisation, onDonate }) {
 							className="h-12 w-12 text-emerald-600"
 							aria-hidden="true"
 						/>
+					</div>
+				)}
+
+				{/* VERIFIED BADGE */}
+				{isApproved && (
+					<div className="absolute right-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-white/95 px-3 py-1.5 text-xs font-bold text-[#168047] shadow-sm backdrop-blur-sm">
+						<span className="flex h-4 w-4 items-center justify-center rounded-full bg-[#168047] text-white">
+							<Check
+								className="h-2.5 w-2.5"
+								aria-hidden="true"
+							/>
+						</span>
+
+						Verified
 					</div>
 				)}
 			</div>
@@ -69,6 +101,7 @@ export default function OrganizationCard({ organisation, onDonate }) {
 						className="mr-1.5 h-3.5 w-3.5"
 						aria-hidden="true"
 					/>
+
 					{location}
 				</span>
 
@@ -96,7 +129,7 @@ export default function OrganizationCard({ organisation, onDonate }) {
 				{/* ACTIONS */}
 				{id && (
 					<div className="mt-5 flex gap-3">
-
+						{/* VIEW */}
 						<Link
 							to={`/organizations/${id}`}
 							className="flex flex-1 items-center justify-center gap-2 rounded-lg border border-emerald-200 bg-white px-4 py-2.5 text-sm font-semibold text-emerald-700 transition-all duration-200 hover:bg-emerald-50 hover:shadow-sm"
@@ -109,6 +142,7 @@ export default function OrganizationCard({ organisation, onDonate }) {
 							/>
 						</Link>
 
+						{/* DONATE */}
 						{onDonate && (
 							<button
 								type="button"
@@ -123,10 +157,8 @@ export default function OrganizationCard({ organisation, onDonate }) {
 								/>
 							</button>
 						)}
-
 					</div>
 				)}
-
 			</div>
 		</article>
 	)

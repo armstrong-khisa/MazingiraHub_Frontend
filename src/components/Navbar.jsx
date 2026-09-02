@@ -222,11 +222,11 @@ function Navbar() {
 								>
 									{/* Avatar */}
 									<div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#183b2b] text-xs font-bold text-white">
-										{getInitials(user?.name)}
+										{getInitials(user?.full_name)}
 									</div>
 
 									<span className="hidden max-w-[120px] truncate sm:block">
-										{user?.name || 'User'}
+										{user?.full_name || 'User'}
 									</span>
 
 									<svg
@@ -252,16 +252,17 @@ function Navbar() {
 								{isProfileOpen && (
 									<div className="absolute right-0 mt-3 w-[min(16rem,calc(100vw-2rem))] max-w-[calc(100vw-2rem)] overflow-hidden rounded-2xl border border-black/5 bg-white shadow-xl">
 
-										{/* User information */}
-										<div className="border-b border-gray-100 px-5 py-4">
-											<p className="text-sm font-semibold text-[#183b2b]">
-												{user?.name || 'User'}
-											</p>
+				{/* User information */}
+<div className="border-b border-gray-100 px-5 py-4">
+	<p className="text-sm font-semibold text-[#183b2b]">
+		{user?.role === 'admin' ? 'Admin' : 'User'}
+	</p>
 
-											<p className="mt-1 truncate text-xs text-gray-500">
-												{user?.email || ''}
-											</p>
-										</div>
+	<p className="mt-1 truncate text-xs text-gray-500">
+		{user?.email || ''}
+	</p>
+</div>
+
 
 										{/* Dashboard */}
 										<button
