@@ -1,5 +1,11 @@
 import { apiRequest } from './Api'
 
+// Public platform-wide stats (no auth required)
+export async function getPublicStats() {
+  const data = await apiRequest('/api/stats')
+  return data.stats || data.data || data
+}
+
 export async function getOrganizations(params = {}) {
   const search = new URLSearchParams(
     Object.entries(params).filter(([, value]) => value !== undefined && value !== ''),
