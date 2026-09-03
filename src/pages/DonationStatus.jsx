@@ -24,16 +24,22 @@ function getPaymentStatus(response) {
 	const resultCodeValue = candidates.find((value) =>
 		value.ResultCode !== undefined ||
 		value.result_code !== undefined ||
-		value.resultCode !== undefined
+		value.resultCode !== undefined ||
+		value.ResponseCode !== undefined ||
+		value.response_code !== undefined ||
+		value.responseCode !== undefined
 	)
-	const resultCode = resultCodeValue?.ResultCode ?? resultCodeValue?.result_code ?? resultCodeValue?.resultCode
+	const resultCode = resultCodeValue?.ResultCode ?? resultCodeValue?.result_code ?? resultCodeValue?.resultCode ?? resultCodeValue?.ResponseCode ?? resultCodeValue?.response_code ?? resultCodeValue?.responseCode
 	const callbackMessage = candidates
 		.map((value) => value.ResultDesc || value.result_desc || value.message || '')
 		.join(' ')
 		.toLowerCase()
 
 	if (resultCode !== undefined && resultCode !== null) {
-		return String(resultCode) === '0' ? 'paid' : 'cancelled'
+		const normalizedResultCode = String(resultCode)
+		if (normalizedResultCode === '0') return 'paid'
+		if (normalizedResultCode === '1037') return 'pending'
+		return 'cancelled'
 	}
 
 	if (['completed', 'complete', 'success', 'successful', 'paid'].includes(rawStatus)) return 'paid'
