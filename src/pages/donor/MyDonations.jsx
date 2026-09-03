@@ -59,13 +59,13 @@ export default function DonorMyDonations() {
 
 	const getStatusStyles = (status) => {
 		switch (status?.toLowerCase()) {
-			case 'completed':
+			case 'paid':
 				return 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200'
 
 			case 'pending':
 				return 'bg-amber-50 text-amber-700 ring-1 ring-amber-200'
 
-			case 'failed':
+			case 'cancelled':
 				return 'bg-red-50 text-red-700 ring-1 ring-red-200'
 
 			default:
@@ -157,9 +157,9 @@ export default function DonorMyDonations() {
 								className="w-full rounded-xl border border-gray-200 bg-gray-50 px-3.5 py-2.5 text-sm font-medium text-gray-700 outline-none transition focus:border-[#23945c] focus:bg-white focus:ring-2 focus:ring-[#23945c]/10"
 							>
 								<option value="all">All Donations</option>
-								<option value="completed">Completed</option>
+								<option value="paid">Paid</option>
 								<option value="pending">Pending</option>
-								<option value="failed">Failed</option>
+								<option value="cancelled">Cancelled</option>
 							</select>
 						</div>
 
