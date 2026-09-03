@@ -16,6 +16,7 @@ import Stories from './pages/Stories'
 import StoryDetails from './pages/StoryDetails'
 import ApplyOrganization from './pages/ApplyOrganization'
 import NotFound from './pages/NotFound'
+import DonationStatus from './pages/DonationStatus'
 
 // Donor pages
 import DonorDashboard from './pages/donor/Dashboard'
@@ -56,6 +57,7 @@ function App() {
         />
         <Route path="/stories" element={<Stories />} />
         <Route path="/stories/:id" element={<StoryDetails />} />
+        <Route path="/donation/status" element={<DonationStatus />} />
         <Route
           path="/apply-organization"
           element={

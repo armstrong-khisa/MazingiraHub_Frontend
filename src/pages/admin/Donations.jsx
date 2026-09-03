@@ -179,7 +179,7 @@ export default function AdminDonations() {
                     {donation.status && (
                       <span
                         className={`inline-block rounded-full px-3 py-1 text-xs font-semibold ${
-                          donation.status === 'completed'
+                          donation.status === 'paid'
                             ? 'bg-green-100 text-green-700'
                             : donation.status === 'pending'
                             ? 'bg-yellow-100 text-yellow-700'

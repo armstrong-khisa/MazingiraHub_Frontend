@@ -16,12 +16,10 @@ function AuthModal({ onClose, onLoginSuccess }) {
 		e.preventDefault()
 		setError('')
 
-		// Trim values before sending them
 		const cleanName = name.trim()
 		const cleanEmail = email.trim().toLowerCase()
 		const cleanPassword = password
 
-		// Basic validation
 		if (!cleanEmail || !cleanPassword) {
 			setError('Please enter your email and password.')
 			return
@@ -54,9 +52,9 @@ function AuthModal({ onClose, onLoginSuccess }) {
 		} catch (err) {
 			setError(
 				err?.message ||
-				(mode === 'login'
-					? 'Login failed. Please check your email and password.'
-					: 'Registration failed. Please try again.')
+					(mode === 'login'
+						? 'Login failed. Please check your email and password.'
+						: 'Registration failed. Please try again.')
 			)
 		} finally {
 			setLoading(false)
@@ -69,28 +67,28 @@ function AuthModal({ onClose, onLoginSuccess }) {
 	}
 
 	return (
-		<div
-			className="fixed inset-0 z-[100] flex items-start justify-center overflow-y-auto bg-black/50 px-4 py-4 backdrop-blur-sm sm:items-center sm:py-8"
-			onClick={onClose}
-		>
-			<div
-				className="relative my-auto max-h-[calc(100vh-2rem)] w-full max-w-md overflow-y-auto rounded-2xl bg-white p-5 shadow-2xl sm:p-8"
-				onClick={(e) => e.stopPropagation()}
-			>
-				{/* Close */}
+		<div className="fixed inset-0 z-[100] flex items-start justify-center overflow-y-auto bg-black/50 px-4 py-4 backdrop-blur-sm sm:items-center sm:py-8">
+			<div className="relative my-auto max-h-[calc(100vh-2rem)] w-full max-w-md overflow-y-auto rounded-2xl bg-white p-5 shadow-2xl sm:p-8">
+				{/* CLOSE BUTTON */}
 				<button
 					type="button"
 					onClick={onClose}
-					className="absolute right-5 top-5 flex h-8 w-8 items-center justify-center rounded-full text-2xl text-gray-400 hover:bg-gray-100 hover:text-gray-700"
+					className="absolute right-5 top-5 flex h-8 w-8 items-center justify-center rounded-full text-2xl text-gray-400 transition hover:bg-gray-100 hover:text-gray-700"
 					aria-label="Close"
 				>
-					<X className="h-4 w-4" aria-hidden="true" />
+					<X
+						className="h-4 w-4"
+						aria-hidden="true"
+					/>
 				</button>
 
-				{/* Header */}
+				{/* HEADER */}
 				<div className="mb-7 text-center">
 					<div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-[#183b2b] text-xl text-white">
-						<ArrowUpRight className="h-5 w-5" aria-hidden="true" />
+						<ArrowUpRight
+							className="h-5 w-5"
+							aria-hidden="true"
+						/>
 					</div>
 
 					<h2 className="text-2xl font-bold text-[#183b2b]">
@@ -106,7 +104,7 @@ function AuthModal({ onClose, onLoginSuccess }) {
 					</p>
 				</div>
 
-				{/* Error */}
+				{/* ERROR */}
 				{error && (
 					<div
 						className="mb-5 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600"
@@ -116,8 +114,12 @@ function AuthModal({ onClose, onLoginSuccess }) {
 					</div>
 				)}
 
-				<form onSubmit={handleSubmit} className="space-y-5">
-					{/* Full Name */}
+				{/* FORM */}
+				<form
+					onSubmit={handleSubmit}
+					className="space-y-5"
+				>
+					{/* FULL NAME */}
 					{mode === 'register' && (
 						<div>
 							<label
@@ -132,16 +134,18 @@ function AuthModal({ onClose, onLoginSuccess }) {
 								name="full_name"
 								type="text"
 								value={name}
-								onChange={(e) => setName(e.target.value)}
+								onChange={(e) =>
+									setName(e.target.value)
+								}
 								placeholder="John Doe"
 								autoComplete="name"
 								disabled={loading}
-								className="w-full rounded-lg border border-gray-200 px-4 py-3 text-sm outline-none focus:border-[#28a66a] focus:ring-2 focus:ring-[#28a66a]/20 disabled:bg-gray-100"
+								className="w-full rounded-lg border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-[#28a66a] focus:ring-2 focus:ring-[#28a66a]/20 disabled:bg-gray-100"
 							/>
 						</div>
 					)}
 
-					{/* Email */}
+					{/* EMAIL */}
 					<div>
 						<label
 							htmlFor="email"
@@ -155,15 +159,17 @@ function AuthModal({ onClose, onLoginSuccess }) {
 							name="email"
 							type="email"
 							value={email}
-							onChange={(e) => setEmail(e.target.value)}
+							onChange={(e) =>
+								setEmail(e.target.value)
+							}
 							placeholder="you@example.com"
 							autoComplete="email"
 							disabled={loading}
-							className="w-full rounded-lg border border-gray-200 px-4 py-3 text-sm outline-none focus:border-[#28a66a] focus:ring-2 focus:ring-[#28a66a]/20 disabled:bg-gray-100"
+							className="w-full rounded-lg border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-[#28a66a] focus:ring-2 focus:ring-[#28a66a]/20 disabled:bg-gray-100"
 						/>
 					</div>
 
-					{/* Password */}
+					{/* PASSWORD */}
 					<div>
 						<label
 							htmlFor="password"
@@ -177,7 +183,9 @@ function AuthModal({ onClose, onLoginSuccess }) {
 							name="password"
 							type="password"
 							value={password}
-							onChange={(e) => setPassword(e.target.value)}
+							onChange={(e) =>
+								setPassword(e.target.value)
+							}
 							placeholder="••••••••"
 							autoComplete={
 								mode === 'login'
@@ -185,11 +193,11 @@ function AuthModal({ onClose, onLoginSuccess }) {
 									: 'new-password'
 							}
 							disabled={loading}
-							className="w-full rounded-lg border border-gray-200 px-4 py-3 text-sm outline-none focus:border-[#28a66a] focus:ring-2 focus:ring-[#28a66a]/20 disabled:bg-gray-100"
+							className="w-full rounded-lg border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-[#28a66a] focus:ring-2 focus:ring-[#28a66a]/20 disabled:bg-gray-100"
 						/>
 					</div>
 
-					{/* Submit */}
+					{/* SUBMIT */}
 					<button
 						type="submit"
 						disabled={loading}
@@ -203,14 +211,16 @@ function AuthModal({ onClose, onLoginSuccess }) {
 					</button>
 				</form>
 
-				{/* Switch mode */}
+				{/* SWITCH LOGIN / REGISTER */}
 				<div className="mt-6 text-center text-sm text-gray-500">
 					{mode === 'login' ? (
 						<>
 							Don't have an account?{' '}
 							<button
 								type="button"
-								onClick={() => switchMode('register')}
+								onClick={() =>
+									switchMode('register')
+								}
 								className="font-semibold text-[#183b2b] hover:text-[#28a66a]"
 							>
 								Create account
@@ -221,7 +231,9 @@ function AuthModal({ onClose, onLoginSuccess }) {
 							Already have an account?{' '}
 							<button
 								type="button"
-								onClick={() => switchMode('login')}
+								onClick={() =>
+									switchMode('login')
+								}
 								className="font-semibold text-[#183b2b] hover:text-[#28a66a]"
 							>
 								Sign in
