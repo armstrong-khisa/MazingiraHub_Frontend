@@ -24,8 +24,10 @@ export function applyAsOrganization(payload) {
     method: 'POST',
     body: {
       org_name: payload.name,
+      email: payload.email,
+      password: payload.password,
       description: payload.description,
-      registration_docs_url: payload.registration_docs_url,
+      image_url: payload.image_url || undefined,
     },
   })
 }

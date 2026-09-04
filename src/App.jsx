@@ -61,7 +61,7 @@ function App() {
         <Route
           path="/apply-organization"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute requiredRole="donor">
               <ApplyOrganization />
             </ProtectedRoute>
           }
